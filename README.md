@@ -1,3 +1,5 @@
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/andreswebs/mcbox/badge)](https://scorecard.dev/viewer/?uri=github.com/andreswebs/mcbox)
+
 # $\_mcbox
 
 **mcbox** is a pluggable MCP (Model Context Protocol) server written in [Bash](<https://en.wikipedia.org/wiki/Bash_(Unix_shell)>) and [jq](https://jqlang.org/), fully tested using [Bats](https://bats-core.readthedocs.io/en/stable/), [shellcheck](https://www.shellcheck.net/) and [shfmt](https://github.com/mvdan/sh). It aims to be lightweight, portable, and just **good enough** for AI agents that use local tool execution through `stdio` transport.
