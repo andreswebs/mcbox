@@ -1,0 +1,1 @@
+../../.devspecs/memory/shell-scripting-code-conventions.md

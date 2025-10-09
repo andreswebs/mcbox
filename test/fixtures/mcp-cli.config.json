@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "mcbox": {
+      "command": "mcbox.bash"
+    }
+  }
+}

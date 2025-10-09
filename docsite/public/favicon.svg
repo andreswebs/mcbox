@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <style>
+      .cube-outline {
+        fill: none;
+        stroke: #000;
+        stroke-width: 3;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+      }
+      @media (prefers-color-scheme:dark) {
+        .cube-outline { stroke: #fff; }
+      }
+    </style>
+  </defs>
+
+  <!-- 3D Cube wireframe -->
+  <!-- Back face (hidden edges as dashed) -->
+  <path class="cube-outline" d="M32 40 L72 40 L72 80 L32 80 Z" stroke-dasharray="4,4" opacity="0.5"/>
+
+  <!-- Front face -->
+  <path class="cube-outline" d="M48 56 L88 56 L88 96 L48 96 Z"/>
+
+  <!-- Connecting edges (depth) -->
+  <path class="cube-outline" d="M32 40 L48 56"/>
+  <path class="cube-outline" d="M72 40 L88 56"/>
+  <path class="cube-outline" d="M72 80 L88 96"/>
+  <path class="cube-outline" d="M32 80 L48 96"/>
+</svg>

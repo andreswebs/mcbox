@@ -1,0 +1,66 @@
+{
+  "tools": [
+    {
+      "name": "smoketest",
+      "description": "Confirm that simple tool calling works",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "smoketest_fail",
+      "description": "Demonstrate tool failure",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "echo_token",
+      "description": "Confirm that structured tool calling works",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": ["token"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": ["token"]
+      }
+    },
+    {
+      "name": "echo_token_fail",
+      "description": "Demonstrate tool failure with invalid structured output",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": ["token"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": ["token"]
+      }
+    }
+  ]
+}

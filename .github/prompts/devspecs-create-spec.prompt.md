@@ -1,0 +1,1 @@
+../../.devspecs/prompts/devspecs-create-spec.md

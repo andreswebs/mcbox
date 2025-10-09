@@ -1,0 +1,127 @@
+---
+name: Build
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
+      artifact-name:
+        required: false
+        type: string
+        default: artifact
+      artifact-retention-days:
+        required: false
+        type: number
+        default: 7
+
+    outputs:
+      artifact-name:
+        description: Name of the uploaded build artifact
+        value: ${{ jobs.build.outputs.artifact-name }}
+      attestation-file-name:
+        description: Name of the bundled attestation file
+        value: ${{ jobs.build.outputs.attestation-file-name }}
+      tarball-file-name:
+        description: Name of the bundled tarball file
+        value: ${{ jobs.build.outputs.tarball-file-name }}
+      notes-file-name:
+        description: Name of the bundled release notes file
+        value: ${{ jobs.build.outputs.notes-file-name }}
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runs-on }}
+    outputs:
+      artifact-name: ${{ inputs.artifact-name }}
+      tarball-file-name: ${{ steps.archive.outputs.out-file-basename }}
+      attestation-file-name: ${{ steps.artifact.outputs.attestation-file-name }}
+      notes-file-name: ${{ steps.artifact.outputs.notes-file-name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Generate version.json
+        env:
+          VERSION: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          cat > version.json << EOF
+          {
+            "Version": "${VERSION}",
+            "Commit": "${COMMIT}",
+            "BuildDate": "$(date --utc +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          cat version.json
+
+      - name: Create tarball
+        id: archive
+        env:
+          VERSION: ${{ github.ref_name }}
+          OUT_DIR: dist
+        run: |
+          mkdir -p "${OUT_DIR}"
+          OUT_FILE_BASENAME="mcbox-${VERSION}.tar.gz"
+          OUT_FILE="${OUT_DIR}/${OUT_FILE_BASENAME}"
+          tar \
+              --create \
+              --gzip \
+              --file "${OUT_FILE}" \
+                      mcbox-core.bash \
+                      mcbox-server.bash \
+                      defaults/ \
+                      version.json
+          echo "out-dir=${OUT_DIR}" >> "${GITHUB_OUTPUT}"
+          echo "out-file=${OUT_FILE}" >> "${GITHUB_OUTPUT}"
+          echo "out-file-basename=${OUT_FILE_BASENAME}" >> "${GITHUB_OUTPUT}"
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v3
+        id: attestation
+        with:
+          subject-path: ${{ steps.archive.outputs.out-file }}
+
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v4
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+        env:
+          OUTPUT: "${{ steps.archive.outputs.out-dir }}/CHANGES.md"
+
+      - name: Create artifact
+        id: artifact
+        env:
+          OUT_DIR: ${{ steps.archive.outputs.out-dir }}
+          ATTESTATION_FILE: ${{ steps.attestation.outputs.bundle-path }}
+          NOTES_FILE: ${{ steps.git-cliff.outputs.changelog }}
+        run: |
+          cp "${ATTESTATION_FILE}" "${OUT_DIR}"
+          echo "attestation-file-name=$(basename "${ATTESTATION_FILE}")" >> "${GITHUB_OUTPUT}"
+          echo "notes-file-name=$(basename "${NOTES_FILE}")" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ steps.archive.outputs.out-dir }}
+          retention-days: ${{ inputs.artifact-retention-days }}
+          if-no-files-found: error
+          overwrite: true
+          include-hidden-files: false

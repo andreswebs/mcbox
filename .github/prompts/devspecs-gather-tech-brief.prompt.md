@@ -1,0 +1,1 @@
+../../.devspecs/prompts/devspecs-gather-tech-brief.md

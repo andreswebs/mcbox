@@ -1,0 +1,13 @@
+{
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "smoketest",
+    "version": "0.0.1"
+  },
+  "capabilities": {
+    "tools": {
+      "listChanged": true
+    }
+  },
+  "instructions": "This server is a test fixture. It serves to check if MCP initialization is working properly."
+}

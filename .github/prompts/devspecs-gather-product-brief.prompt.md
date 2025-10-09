@@ -1,0 +1,1 @@
+../../.devspecs/prompts/devspecs-gather-product-brief.md

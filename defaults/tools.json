@@ -1,0 +1,32 @@
+{
+  "tools": [
+    {
+      "name": "file_size",
+      "description": "Get the size of a file in bytes",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to the file"
+          }
+        },
+        "required": ["path"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "number",
+            "description": "File size in bytes"
+          },
+          "path": {
+            "type": "string",
+            "description": "Original file path"
+          }
+        },
+        "required": ["size", "path"]
+      }
+    }
+  ]
+}

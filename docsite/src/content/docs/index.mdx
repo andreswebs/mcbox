@@ -1,0 +1,23 @@
+---
+title: $_mcbox
+description: A pluggable MCP server written in Bash and jq.
+---
+
+## What is **mcbox**?
+
+<a href="https://github.com/andreswebs/mcbox" target="_blank">mcbox</a> is a pluggable MCP (Model Context Protocol) server written in <a href="https://en.wikipedia.org/wiki/Bash_(Unix_shell)" target="_blank">Bash</a> and <a href="https://jqlang.org/" target="_blank">jq</a>, fully tested using <a href="https://bats-core.readthedocs.io/en/stable/" target="_blank">Bats</a>, <a href="https://www.shellcheck.net/" target="_blank">shellcheck</a> and <a href="https://github.com/mvdan/sh" target="_blank">shfmt</a>.
+
+It aims to be lightweight, portable, and just **good enough** for AI agents that use local tool execution through `stdio` transport.
+
+The project has a few non-goals:
+
+- No concurrency/parallel processing
+- No support for high throughput
+- No streaming responses
+- No MCP transports other than `stdio`
+
+Aside from that, it's a great way to provide your own tools for local AI agents, and write those tools in any programming language you like.
+
+## Quick Start
+
+Begin using **mcbox** by following our [Getting Started](/guides/getting-started/) guide.
