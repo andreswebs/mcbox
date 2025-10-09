@@ -1,0 +1,40 @@
+# https://github.com/mislav/bump-homebrew-formula-action
+---
+name: Homebrew Formula
+
+on:
+  push:
+  release:
+    types: [released]
+
+jobs:
+  homebrew:
+    name: Update Homebrew formula
+    if: ${{ github.event_name != 'push' || !contains(github.ref, '-') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Required info
+        id: info
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          DOWNLOAD_URL="https://github.com/andreswebs/mcbox/releases/download/${TAG}/mcbox-${TAG}.tar.gz"
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "download-url=${DOWNLOAD_URL}" >> "${GITHUB_OUTPUT}"
+
+      - name: Update formula
+        uses: mislav/bump-homebrew-formula-action@v3
+        with:
+          formula-name: mcbox
+          formula-path: Formula/mcbox.rb
+          homebrew-tap: andreswebs/homebrew-tap
+          base-branch: main
+          download-url: ${{ steps.info.outputs.download-url }}
+          create-pullrequest: true
+          commit-message: |
+            {{formulaName}} {{version}}
+
+            Created by https://github.com/mislav/bump-homebrew-formula-action
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_COMMITTER_TOKEN }}
