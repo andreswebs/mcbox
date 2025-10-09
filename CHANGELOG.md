@@ -8,11 +8,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## Unreleased
 
-[77ff5fa](77ff5fabfd26c1889c0d4f2d55f115f9ac4ae7da)...[78d158f](78d158f23b3e3d70c0084c6bdfead85ff91d4b91)
+[77ff5fa](77ff5fabfd26c1889c0d4f2d55f115f9ac4ae7da)...[5374e09](5374e0966aecbf8bccc398fc653491f001191ca1)
+
+### Bug Fixes
+
+- Broken links on md pages ([ac43c45](ac43c45b4262461248114bd3ef92921f2bb21ac7)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Homebrew workflow triggers (#4) ([5374e09](5374e0966aecbf8bccc398fc653491f001191ca1)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ### Documentation
 
-- Upd changelog ([78d158f](78d158f23b3e3d70c0084c6bdfead85ff91d4b91)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Upd changelog ([81d2e35](81d2e359f104df051e3dee4a70a5abbfa34f836c)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
+### Miscellaneous Tasks
+
+- Minor styling change to build ([8419021](84190214de9ffc756a1f688af1af785c5a251ad7)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Auto bump homebrew formula on release (#2) ([3702039](3702039397577933e25f2675541df844b463db5b)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Fix shfmt (#3) ([1d44cae](1d44cae807cc902cbe90869a7102b0f7b603170f)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ## 0.1.1 - 2025-10-09
 
