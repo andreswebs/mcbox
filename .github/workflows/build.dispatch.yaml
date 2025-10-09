@@ -56,6 +56,7 @@ jobs:
           fetch-depth: 0
 
       - name: Generate version.json
+        id: version
         env:
           VERSION: ${{ github.ref_name }}
           COMMIT: ${{ github.sha }}
@@ -84,8 +85,8 @@ jobs:
               --file "${OUT_FILE}" \
                       mcbox-core.bash \
                       mcbox-server.bash \
-                      defaults/ \
-                      version.json
+                      version.json \
+                      defaults/
           echo "out-dir=${OUT_DIR}" >> "${GITHUB_OUTPUT}"
           echo "out-file=${OUT_FILE}" >> "${GITHUB_OUTPUT}"
           echo "out-file-basename=${OUT_FILE_BASENAME}" >> "${GITHUB_OUTPUT}"
