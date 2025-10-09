@@ -6,18 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.1.2 - 2025-10-09
 
-[77ff5fa](77ff5fabfd26c1889c0d4f2d55f115f9ac4ae7da)...[5374e09](5374e0966aecbf8bccc398fc653491f001191ca1)
+[77ff5fa](77ff5fabfd26c1889c0d4f2d55f115f9ac4ae7da)...[d7a62b0](d7a62b05e097dc6f8a8ac0d4d75a97a1f2d49bc5)
 
 ### Bug Fixes
 
 - Broken links on md pages ([ac43c45](ac43c45b4262461248114bd3ef92921f2bb21ac7)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Homebrew workflow triggers (#4) ([5374e09](5374e0966aecbf8bccc398fc653491f001191ca1)), Signed-off-by:Andre Silva <andreswebs@pm.me>
-
-### Documentation
-
-- Upd changelog ([81d2e35](81d2e359f104df051e3dee4a70a5abbfa34f836c)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ### Miscellaneous Tasks
 
