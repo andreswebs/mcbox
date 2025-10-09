@@ -13,7 +13,7 @@ Before adding tools, ensure you have:
 - Configuration files located at `~/.config/mcbox` (`tools.json` and `tools.bash`)
 - Basic familiarity with JSON and Bash scripting
 
-Follow the [Getting Started](/guides/getting-started) guide to setup **mcbox** with default configuration files if you haven't installed it yet.
+Follow the [Getting Started](/mcbox/guides/getting-started) guide to setup **mcbox** with default configuration files if you haven't installed it yet.
 
 ## Adding a Simple Bash Tool
 
@@ -23,36 +23,36 @@ Add a new tool definition to your `tools.json` file:
 
 ```json
 {
-  "tools": [
-    {
-      "name": "file_size",
-      "description": "Get the size of a file in bytes",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "description": "Path to the file"
-          }
-        },
-        "required": ["path"]
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "size": {
-            "type": "number",
-            "description": "File size in bytes"
-          },
-          "path": {
-            "type": "string",
-            "description": "Original file path"
-          }
-        },
-        "required": ["size", "path"]
-      }
-    }
-  ]
+    "tools": [
+        {
+            "name": "file_size",
+            "description": "Get the size of a file in bytes",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Path to the file"
+                    }
+                },
+                "required": ["path"]
+            },
+            "outputSchema": {
+                "type": "object",
+                "properties": {
+                    "size": {
+                        "type": "number",
+                        "description": "File size in bytes"
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "Original file path"
+                    }
+                },
+                "required": ["size", "path"]
+            }
+        }
+    ]
 }
 ```
 
@@ -176,46 +176,46 @@ Add the tool definition to your `tools.json`:
 
 ```json
 {
-  "tools": [
-    {
-      "name": "file_hash",
-      "description": "Calculate SHA256 hash of a file using an external Go program",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "description": "Path to the file to hash"
-          },
-          "algorithm": {
-            "type": "string",
-            "description": "Hash algorithm (currently only sha256)",
-            "enum": ["sha256"],
-            "default": "sha256"
-          }
-        },
-        "required": ["path"]
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "description": "Original file path"
-          },
-          "hash": {
-            "type": "string",
-            "description": "Hexadecimal hash value"
-          },
-          "algorithm": {
-            "type": "string",
-            "description": "Hash algorithm used"
-          }
-        },
-        "required": ["path", "hash", "algorithm"]
-      }
-    }
-  ]
+    "tools": [
+        {
+            "name": "file_hash",
+            "description": "Calculate SHA256 hash of a file using an external Go program",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Path to the file to hash"
+                    },
+                    "algorithm": {
+                        "type": "string",
+                        "description": "Hash algorithm (currently only sha256)",
+                        "enum": ["sha256"],
+                        "default": "sha256"
+                    }
+                },
+                "required": ["path"]
+            },
+            "outputSchema": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Original file path"
+                    },
+                    "hash": {
+                        "type": "string",
+                        "description": "Hexadecimal hash value"
+                    },
+                    "algorithm": {
+                        "type": "string",
+                        "description": "Hash algorithm used"
+                    }
+                },
+                "required": ["path", "hash", "algorithm"]
+            }
+        }
+    ]
 }
 ```
 

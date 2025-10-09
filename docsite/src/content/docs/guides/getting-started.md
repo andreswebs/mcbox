@@ -34,30 +34,30 @@ For example:
 
 - for **Claude Desktop**:
 
-  ```json
-  {
-    "mcpServers": {
-      "mcbox": {
-        "command": "mcbox",
-        "args": []
-      }
+    ```json
+    {
+        "mcpServers": {
+            "mcbox": {
+                "command": "mcbox",
+                "args": []
+            }
+        }
     }
-  }
-  ```
+    ```
 
 - for **GitHub Copilot**:
 
-  ```json
-  {
-    "servers": {
-      "mcbox": {
-        "type": "stdio",
-        "command": "mcbox",
-        "args": []
-      }
+    ```json
+    {
+        "servers": {
+            "mcbox": {
+                "type": "stdio",
+                "command": "mcbox",
+                "args": []
+            }
+        }
     }
-  }
-  ```
+    ```
 
 - for **other MCP clients**: use the command `mcbox`
 
@@ -65,5 +65,5 @@ For example:
 
 Now that you have a working **mcbox** server, you can:
 
-- **Add more tools** - Follow our [How to Add Tools](/guides/adding-tools) guide
+- **Add more tools** - Follow our [How to Add Tools](/mcbox/guides/adding-tools) guide
 - **Integrate external programs** - Create tools that call Python scripts, APIs, or databases

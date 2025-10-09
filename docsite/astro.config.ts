@@ -7,6 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 const isLocal = process.env.LOCAL_DOCS;
 
 const config: AstroUserConfig<never, never, never> = {
+    base: '/mcbox',
     integrations: [
         starlight({
             title: '$_mcbox',
@@ -53,7 +54,6 @@ const config: AstroUserConfig<never, never, never> = {
 
 if (!isLocal) {
     config.site = 'https://andreswebs.github.io';
-    config.base = '/mcbox';
 }
 
 // https://astro.build/config
