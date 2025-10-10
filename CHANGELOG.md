@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.1.4 - 2025-10-10
 
-[befab29](befab299b8ce1821565b62ac29fffede5bc0d880)...[a2281c8](a2281c8efa450c0390931818177267e69a897fdd)
+[befab29](befab299b8ce1821565b62ac29fffede5bc0d880)...[06018dc](06018dc79b9b418222c4b93ea608d2db4193322e)
 
 ### Documentation
 
