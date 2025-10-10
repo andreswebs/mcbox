@@ -15,9 +15,22 @@ Aside from that, it's a great way to provide your own tools for local AI agents,
 
 Check out the [documentation](https://andreswebs.github.io/mcbox/guides/getting-started/) to get started.
 
-## Prerequisites
+## Support
+
+Feel free to open a [GitHub issue](https://github.com/andreswebs/mcbox/issues) to ask for help, file a bug report, or request a new feature.
+
+## Development
+
+Check out the [Contributing](CONTRIBUTING.md) guide and the [Development](https://andreswebs.github.io/mcbox/guides/development) documentation for how to get started with development.
+
+### Prerequisites
 
 You'll need `bash` and `jq` installed to run the MCP server. Both can be installed using your preferred package manager (e.g. [Homebrew](https://brew.sh/)).
+
+```sh
+brew install bash
+brew install jq
+```
 
 For development, you'll also need to install:
 
@@ -27,23 +40,22 @@ For development, you'll also need to install:
 
 We recommend using [EditorConfig](https://editorconfig.org/) for automated code formatting. Install the EditorConfig extension for your favorite IDE.
 
-## Support
+### Code formatting and linting
 
-Feel free to open a [GitHub issue](https://github.com/andreswebs/mcbox/issues) to ask for help.
-
-## Development
-
-Check out the [Contributing](CONTRIBUTING.md) guide and the [Development](https://andreswebs.github.io/mcbox/guides/development) documentation for how to get started with development.
-
-To run the `shellcheck` linting and `shfmt` format checks, use:
+To run the `shfmt` format and `shellcheck` linting checks, use:
 
 ```sh
-find . -type f -name '*.bash'  ! -path '*/bats*/*' | xargs shellcheck
-shfmt --indent 4 --diff ./*.bash
-shfmt --indent 4 --diff ./test/*.bats
+./test/shfmt.bash
+./test/shellcheck.bash
 ```
 
-## Tests
+To fix formatting you can run:
+
+```sh
+WRITE=true ./test/shfmt.bash
+```
+
+### Tests
 
 Test files in this project are located under the [test/](test/) directory, and named with a `.test.bats` extension, by convention.
 
@@ -65,7 +77,7 @@ To run a specific test file:
 
 The `npx` command from Node's NPM is used for end-to-end testing. You must have Node.js (LTS) installed to run the E2E tests.
 
-### Running the smoke test server
+#### Running the smoke test server
 
 A pre-configured "smoke test" server can be run with:
 

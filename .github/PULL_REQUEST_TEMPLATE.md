@@ -4,30 +4,6 @@
 
 ## Checklist
 
-<!---
-  Linting: make sure all shellcheck issues are addressed when you run:
-  ```sh
-  find . -type f -name '*.bash'  ! -path '*/bats*/*' | xargs shellcheck
-  ```
-
-  Formatting: make sure all shfmt issues are addressed when you run:
-  ```sh
-  shfmt --indent 4 --diff ./*.bash
-  shfmt --indent 4 --diff ./test/*.bats
-  ```
-
-  To fix formatting you can run:
-  ```sh
-  shfmt --indent 4 --write ./*.bash
-  shfmt --indent 4 --write ./test/*.bats
-  ```
-
-  Make sure all new and existing test pass. To run all tests:
-  ```sh
-  ./test/test.bash
-  ```
- -->
-
 - [ ] I have performed a self-review of my code
 - [ ] All new code follows the style guidelines of this project
 - [ ] All new code has been linted with `shellcheck` and formated with `shfmt`
@@ -38,4 +14,28 @@
 <!--- If suggesting a new feature or change, please discuss it in an issue first -->
 <!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
 
-<!--- Please link to the issue here: -->Issue: #<!-- Issue number here -->
+<!--- Please link to the issue below: -->
+
+Issue: #<!-- Issue number here -->
+
+<!---
+  Linting: make sure all shellcheck issues are addressed when you run:
+  ```sh
+  ./test/shellcheck.bash
+  ```
+
+  Formatting: make sure all shfmt issues are addressed when you run:
+  ```sh
+  ./test/shfmt.bash
+  ```
+
+  To fix formatting you can run:
+  ```sh
+  WRITE=true ./test/shfmt.bash
+  ```
+
+  Make sure all new and existing test pass. To run all tests:
+  ```sh
+  ./test/test.bash
+  ```
+ -->

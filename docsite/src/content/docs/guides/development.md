@@ -110,10 +110,11 @@ git config --local user.signingkey YOUR_GPG_KEY_ID
 
 Execute all tests to ensure everything works:
 
-```bash
-# Run all unit tests
+```sh
 ./test/test.bash
+```
 
+```sh
 # Run a specific test file
 ./test/bats/bin/bats ./test/mcp_handle_tool_call.test.bats
 
@@ -127,22 +128,23 @@ All tests should pass.
 
 Verify code formatting and linting:
 
-```bash
-# Check shell script quality
-find . -type f -name '*.bash' ! -path '*/bats*/*' | xargs shellcheck
+- **Formatting**: make sure all `shfmt` issues are addressed when you run:
 
-# Check formatting (shows differences)
-shfmt --indent 4 --diff ./*.bash
-shfmt --indent 4 --diff ./test/*.bats
-```
+  ```sh
+  ./test/shfmt.bash
+  ```
 
-No output means everything is properly formatted. If there are formatting issues, fix them:
+  No output means everything is properly formatted. If there are formatting issues, fix them with:
 
-```bash
-# Auto-format shell scripts
-shfmt --indent 4 --write ./*.bash
-shfmt --indent 4 --write ./test/*.bats
-```
+  ```sh
+  WRITE=true ./test/shfmt.bash
+  ```
+
+- **Linting**: make sure all `shellcheck` issues are addressed when you run:
+
+  ```sh
+  ./test/shellcheck.bash
+  ```
 
 ### Test the Smoke Test Server
 
@@ -173,7 +175,7 @@ npx @modelcontextprotocol/inspector ./test/helpers/smoketest-server/mcbox.bash
 
    ```bash
    # Create test file for new function
-   cp test/template.test.bats test/your_function_name.test.bats
+   touch test/your_function_name.test.bats
    # Edit the test file to test your function
    ```
 

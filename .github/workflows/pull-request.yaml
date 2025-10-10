@@ -5,45 +5,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  SHFMT_VERSION: v3.12.0
-
 jobs:
   test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          submodules: recursive
-
-      - name: Install jq and shellcheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes jq shellcheck
-
-      - name: Install shfmt
-        run: |
-          curl \
-            --silent \
-            --show-error \
-            --location \
-            "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" \
-            --output /tmp/shfmt
-          sudo install /tmp/shfmt /usr/local/bin/
-
-      - name: Verify shell script formatting
-        run: |
-          shfmt --indent 4 --diff ./*.bash
-          shfmt --indent 4 --diff ./test/*.bash
-          shfmt --indent 4 --diff ./test/*.bats
-          shfmt --indent 4 --diff ./test/helpers/*.bash
-
-      - name: Lint shell scripts
-        run: |
-          find . -type f -name '*.bash'  ! -path '*/bats*/*' | xargs shellcheck
-
-      - name: Run test suite
-        run: |
-          ./test/test.bash
+    uses: ./.github/workflows/test.dispatch.yaml
