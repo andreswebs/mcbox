@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+[befab29](befab299b8ce1821565b62ac29fffede5bc0d880)...[a2281c8](a2281c8efa450c0390931818177267e69a897fdd)
+
+### Documentation
+
+- Add link to CONTRIBUTING ([b988367](b9883674090a6b6caabd989575e69fe4ba328295)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Use security advisories for reporting vulns ([2300a07](2300a0728a61e2a695320701e611695862f93e27)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Add link to security policy on development guide ([373cbc5](373cbc5c451a211d79da4b5db2419535c1ffe207)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Fix typo ([5708988](570898846272b59b9be6d85fb50a3a2c0cf28bfb)), changelog:ignore, Signed-off-by:Andre Silva <andreswebs@pm.me>
+
+### Miscellaneous Tasks
+
+- Refactor workflows and fix homebrew formula update (#10) ([a2281c8](a2281c8efa450c0390931818177267e69a897fdd)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
 ## 0.1.3 - 2025-10-09
 
 [d7a62b0](d7a62b05e097dc6f8a8ac0d4d75a97a1f2d49bc5)...[befab29](befab299b8ce1821565b62ac29fffede5bc0d880)
