@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
@@ -92,13 +92,13 @@ jobs:
           echo "out-file-basename=${OUT_FILE_BASENAME}" >> "${GITHUB_OUTPUT}"
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
         id: attestation
         with:
           subject-path: ${{ steps.archive.outputs.out-file }}
 
       - name: Generate release notes
-        uses: orhun/git-cliff-action@v4
+        uses: orhun/git-cliff-action@d77b37db2e3f7398432d34b72a12aa3e2ba87e51 # v4.6.0
         id: git-cliff
         with:
           config: cliff.toml
@@ -118,7 +118,7 @@ jobs:
           echo "notes-file-name=$(basename "${NOTES_FILE}")" >> "${GITHUB_OUTPUT}"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ steps.archive.outputs.out-dir }}
