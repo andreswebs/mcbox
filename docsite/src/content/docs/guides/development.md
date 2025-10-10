@@ -5,7 +5,9 @@ description: How to set up a development environment for contributing to mcbox.
 
 This guide shows you how to set up a development environment for mcbox and get ready to make contributions.
 
-Check the [CONTRIBUTING](https://github.com/andreswebs/mcbox?tab=contributing-ov-file) guidelines to understand how we assess contributions.
+Check the [Contributing](https://github.com/andreswebs/mcbox?tab=contributing-ov-file) guidelines to understand how we assess contributions.
+
+Check the [Security Policy](https://github.com/andreswebs/mcbox?tab=security-ov-file) for details on how to report security issues.
 
 ## Prerequisites
 
