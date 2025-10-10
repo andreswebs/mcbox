@@ -5,6 +5,8 @@ description: How to set up a development environment for contributing to mcbox.
 
 This guide shows you how to set up a development environment for mcbox and get ready to make contributions.
 
+Check the [CONTRIBUTING](https://github.com/andreswebs/mcbox?tab=contributing-ov-file) guidelines to understand how we assess contributions.
+
 ## Prerequisites
 
 Before you begin, ensure you have:
@@ -68,22 +70,22 @@ npm --version
 
 2. **Clone your fork:**
 
-    ```bash
-    git clone https://github.com/YOUR-USERNAME/mcbox.git
-    cd mcbox
-    ```
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/mcbox.git
+   cd mcbox
+   ```
 
 3. **Add the upstream remote:**
 
-    ```bash
-    git remote add upstream https://github.com/andreswebs/mcbox.git
-    ```
+   ```bash
+   git remote add upstream https://github.com/andreswebs/mcbox.git
+   ```
 
 4. **Initialize git submodules** (for the testing framework):
 
-    ```bash
-    git submodule update --init --recursive
-    ```
+   ```bash
+   git submodule update --init --recursive
+   ```
 
 ## Step 3: Set Up Your Development Environment
 
@@ -159,30 +161,31 @@ npx @modelcontextprotocol/inspector ./test/helpers/smoketest-server/mcbox.bash
 ### Development Workflow
 
 1. **Make your changes** to the appropriate files:
-    - `mcbox-core.bash` - Core library functions
-    - `mcbox-server.bash` - Reference server implementation
-    - `test/*.test.bats` - Unit tests
-    - `defaults/` - Default configuration files
+
+   - `mcbox-core.bash` - Core library functions
+   - `mcbox-server.bash` - Reference server implementation
+   - `test/*.test.bats` - Unit tests
+   - `defaults/` - Default configuration files
 
 2. **Add tests** for new functionality:
 
-    ```bash
-    # Create test file for new function
-    cp test/template.test.bats test/your_function_name.test.bats
-    # Edit the test file to test your function
-    ```
+   ```bash
+   # Create test file for new function
+   cp test/template.test.bats test/your_function_name.test.bats
+   # Edit the test file to test your function
+   ```
 
 3. **Run tests frequently:**
 
-    ```bash
-    ./test/test.bash
-    ```
+   ```bash
+   ./test/test.bash
+   ```
 
 4. **Check code quality:**
-    ```bash
-    shellcheck your-modified-files.bash
-    shfmt --indent 4 --diff your-modified-files.bash
-    ```
+   ```bash
+   shellcheck your-modified-files.bash
+   shfmt --indent 4 --diff your-modified-files.bash
+   ```
 
 ### Testing Guidelines
 
