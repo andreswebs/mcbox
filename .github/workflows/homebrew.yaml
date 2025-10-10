@@ -23,7 +23,7 @@ jobs:
           echo "download-url=${DOWNLOAD_URL}" >> "${GITHUB_OUTPUT}"
 
       - name: Update formula
-        uses: mislav/bump-homebrew-formula-action@v3
+        uses: mislav/bump-homebrew-formula-action@56a283fa15557e9abaa4bdb63b8212abc68e655c # v3.6
         with:
           formula-name: mcbox
           formula-path: Formula/mcbox.rb
