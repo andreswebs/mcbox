@@ -100,7 +100,7 @@ teardown_file() {
     assert_success
     assert_output --partial '"error":'
     assert_output --partial '"code":-32600'
-    assert_output --partial '"message":"Invalid request"'
+    assert_output --partial '"message":"Invalid request: missing required '"'method'"' property"'
 }
 
 @test "mcp_process_request: should handle null id in request" {
