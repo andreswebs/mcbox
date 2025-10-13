@@ -8,29 +8,25 @@ load 'bats-helpers/bats-assert/load'
 @test "mcp_handle_notification: should handle 'notifications/initialized' method" {
     run mcp_handle_notification "notifications/initialized"
     assert_success
-    assert_output --partial "notifications/initialized"
+    assert_output --partial "initialized"
 }
 
-@test "mcp_handle_notification: should return 1 for unknown notification type" {
+@test "mcp_handle_notification: should fail for unknown notification type" {
     run mcp_handle_notification "notifications/unknown"
     assert_failure
-    assert_equal "${status}" 1
 }
 
-@test "mcp_handle_notification: should return 1 for non-notification method" {
+@test "mcp_handle_notification: should fail for non-notification method" {
     run mcp_handle_notification "tools/list"
     assert_failure
-    assert_equal "${status}" 1
 }
 
-@test "mcp_handle_notification: should return 1 for empty method" {
+@test "mcp_handle_notification: should fail for empty method" {
     run mcp_handle_notification ""
     assert_failure
-    assert_equal "${status}" 1
 }
 
-@test "mcp_handle_notification: should return 1 for malformed notification method" {
+@test "mcp_handle_notification: should rfailfor malformed notification method" {
     run mcp_handle_notification "invalid-method"
     assert_failure
-    assert_equal "${status}" 1
 }

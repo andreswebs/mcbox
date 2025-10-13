@@ -40,5 +40,5 @@ setup_file() {
     run call_tool mcbox:echo_token_fail --args '{"token":"'"${TOKEN}"'"}'
 
     assert_failure
-    assert_output --partial '"error": "MCP error -32603: Internal error: tool result does not match outputSchema"'
+    assert_output --partial '"error": "MCP error -32603: Internal error: tool output does not match outputSchema"'
 }

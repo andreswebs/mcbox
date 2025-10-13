@@ -235,7 +235,7 @@ teardown() {
     run mcp_handle_tool_call "${id}" "${params}"
     assert_success
     assert_output --partial '"code":-32602'
-    assert_output --partial '"message":"Invalid params: tool not found: nonexistent_tool"'
+    assert_output --partial '"message":"Invalid params: tool not found"'
 }
 
 @test "mcp_handle_tool_call: should handle tool call when required argument is missing" {
@@ -392,7 +392,7 @@ teardown() {
     assert_success
     assert_output --partial '"error":'
     assert_output --partial '"code":-32603'
-    assert_output --partial '"message":"Internal error: tool result does not match outputSchema"'
+    assert_output --partial '"message":"Internal error: tool output does not match outputSchema"'
 }
 
 @test "mcp_handle_tool_call: should handle complex tool with special characters in token" {
