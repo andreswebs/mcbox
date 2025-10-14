@@ -765,7 +765,7 @@ function mcbox_version() {
         log_warn "failed to read version file: ${version_file}"
     fi
 
-    echo "${version}"
+    echo_stderr "${version}"
 }
 
 function mcbox_load_config() {
