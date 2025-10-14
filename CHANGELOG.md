@@ -16,6 +16,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Logging ([cb5d90b](cb5d90b0f661935dfc107ab64802b832d5a58ae4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Logging ([8dbf045](8dbf045eaeb20157d6564906d9e0f6aca8689190)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
+## 0.1.5 - 2025-10-13
+
+[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[1ba2685](1ba26851dc1654987b70955ad57065020d8efcb4)
+
+### Refactor
+
+- Add more debug logging (#15) ([1ba2685](1ba26851dc1654987b70955ad57065020d8efcb4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
 ## 0.1.4 - 2025-10-10
 
 [befab29](befab299b8ce1821565b62ac29fffede5bc0d880)...[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)
