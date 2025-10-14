@@ -6,20 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[b9ca003](b9ca003b0738da76330a11577f81dbe8c0a8e2d3)
+
+### Refactor
+
+- Add more debug logging (#15) ([b9ca003](b9ca003b0738da76330a11577f81dbe8c0a8e2d3)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
 ## 0.1.4 - 2025-10-10
 
-[befab29](befab299b8ce1821565b62ac29fffede5bc0d880)...[06018dc](06018dc79b9b418222c4b93ea608d2db4193322e)
+[befab29](befab299b8ce1821565b62ac29fffede5bc0d880)...[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)
 
 ### Documentation
 
 - Add link to CONTRIBUTING ([b988367](b9883674090a6b6caabd989575e69fe4ba328295)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Use security advisories for reporting vulns ([2300a07](2300a0728a61e2a695320701e611695862f93e27)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Add link to security policy on development guide ([373cbc5](373cbc5c451a211d79da4b5db2419535c1ffe207)), Signed-off-by:Andre Silva <andreswebs@pm.me>
-- Fix typo ([5708988](570898846272b59b9be6d85fb50a3a2c0cf28bfb)), changelog:ignore, Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Fix typo ([dd876be](dd876be85013e913ed1b2be8b79d229776f3912a)), changelog:ignore, Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ### Miscellaneous Tasks
 
-- Refactor workflows and fix homebrew formula update (#10) ([a2281c8](a2281c8efa450c0390931818177267e69a897fdd)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Refactor workflows and fix homebrew formula update (#10) ([6581d48](6581d487e0d65152a41231d264e1dc0fdb9c3b37)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ## 0.1.3 - 2025-10-09
 
