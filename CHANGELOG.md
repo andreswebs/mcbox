@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## Unreleased
 
+<<<<<<< HEAD
 [7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[8dbf045](8dbf045eaeb20157d6564906d9e0f6aca8689190)
 
 ### Refactor
@@ -15,6 +16,21 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Add more debug logging (#15) ([b9ca003](b9ca003b0738da76330a11577f81dbe8c0a8e2d3)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Logging ([cb5d90b](cb5d90b0f661935dfc107ab64802b832d5a58ae4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Logging ([8dbf045](8dbf045eaeb20157d6564906d9e0f6aca8689190)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+=======
+[ac92992](ac9299269781be505dad55489461b6a3c42494b4)...[30e362b](30e362bfdccab179a5eba88f547399e714eee435)
+
+### Refactor
+
+- Logging ([30e362b](30e362bfdccab179a5eba88f547399e714eee435)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
+## 0.1.6 - 2025-10-14
+
+[1ba2685](1ba26851dc1654987b70955ad57065020d8efcb4)...[ac92992](ac9299269781be505dad55489461b6a3c42494b4)
+
+### Bug Fixes
+
+- Use stderr for --version ([ac92992](ac9299269781be505dad55489461b6a3c42494b4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+>>>>>>> c5cde30 (docs: changelog)
 
 ## 0.1.5 - 2025-10-13
 
