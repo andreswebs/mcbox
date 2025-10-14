@@ -164,6 +164,7 @@ function mcbox_check_dependencies() {
         "ls"
         "printf"
         "tr"
+        "realpath"
         "jq"
     )
 
@@ -183,6 +184,21 @@ function mcbox_check_dependencies() {
         return 1
     fi
 
+    # Check if realpath supports --canonicalize-missing and --quiet
+    local realpath_help
+    if ! realpath_help=$(realpath --help 2>&1); then
+        log_fatal "failed to run 'realpath --help'"
+        return 1
+    fi
+    if ! grep -q -- '--canonicalize-missing' <<<"${realpath_help}"; then
+        log_fatal "installed version of realpath does not support --canonicalize-missing (required); update your version of 'coreutils'"
+        return 1
+    fi
+    if ! grep -q -- '--quiet' <<<"${realpath_help}"; then
+        log_fatal "installed version of realpath does not support --quiet (required); update your version of 'coreutils'"
+        return 1
+    fi
+
     return 0
 }
 
@@ -194,7 +210,7 @@ function is_readable_file() {
     local file_path="${1}"
 
     local resolved_path
-    if ! resolved_path=$(realpath -q "${file_path}" 2>/dev/null); then
+    if ! resolved_path=$(realpath --quiet "${file_path}" 2>/dev/null); then
         return 1
     fi
     [ -f "${resolved_path}" ] && [ -r "${resolved_path}" ]
@@ -375,7 +391,7 @@ function jsonschema_validate_schema() {
         while IFS= read -r required; do
             if [ -n "${required}" ]; then
                 if ! json_object_has_key "${input}" "${required}"; then
-                    log_error "missing required argument: '${required}'"
+                    log_error "missing required property: '${required}'"
                     return 1
                 fi
             fi
@@ -624,6 +640,7 @@ function jsonrpc_create_error_response() {
         return 1
     fi
 
+    log_trace "${error_response}"
     echo "${error_response}"
 }
 
@@ -648,9 +665,9 @@ function jsonrpc_create_result_object() {
                 return 1
             fi
         fi
-
-        # Treat as plain string
+        # Otherwise treat as plain string
         if ! result_contents=$(printf '%s' "${result}" | jq --raw-input --slurp --compact-output .); then
+            log_error "malformed JSON: ${result}"
             return 1
         fi
     else
@@ -690,20 +707,29 @@ function jsonrpc_create_result_response() {
         return 1
     fi
 
+    log_trace "${result_response}"
     echo "${result_response}"
 }
 
 function mcbox_get_data_home() {
     local default_data_home="${XDG_DATA_HOME:-${HOME}/.local/share}"
     local data_home="${MCBOX_DATA_HOME:-${default_data_home}/mcbox}"
-    log_debug "MCBOX_DATA_HOME=${data_home}"
+    if ! data_home=$(realpath --canonicalize-missing --quiet "${data_home}"); then
+        log_error "failed to parse path: ${data_home}"
+        return 1
+    fi
+    log_trace "${data_home}"
     echo "${data_home}"
 }
 
 function mcbox_get_config_home() {
     local default_config_home="${XDG_CONFIG_HOME:-${HOME}/.config}"
     local config_home="${MCBOX_CONFIG_HOME:-${default_config_home}/mcbox}"
-    log_debug "MCBOX_CONFIG_HOME=${config_home}"
+    if ! config_home=$(realpath --canonicalize-missing --quiet "${config_home}"); then
+        log_error "failed to parse path: ${config_home}"
+        return 1
+    fi
+    log_trace "${config_home}"
     echo "${config_home}"
 }
 
@@ -711,7 +737,11 @@ function mcbox_get_server_config_location() {
     local config_home
     config_home=$(mcbox_get_config_home)
     local server_config_file="${MCBOX_SERVER_CONFIG_FILE:-${config_home}/server.json}"
-    log_debug "MCBOX_SERVER_CONFIG_FILE=${server_config_file}"
+    if ! server_config_file=$(realpath --canonicalize-missing --quiet "${server_config_file}"); then
+        log_error "failed to parse path: ${server_config_file}"
+        return 1
+    fi
+    log_trace "${server_config_file}"
     echo "${server_config_file}"
 }
 
@@ -719,7 +749,11 @@ function mcbox_get_tools_config_location() {
     local config_home
     config_home=$(mcbox_get_config_home)
     local tools_config_file="${MCBOX_TOOLS_CONFIG_FILE:-${config_home}/tools.json}"
-    log_debug "MCBOX_TOOLS_CONFIG_FILE=${tools_config_file}"
+    if ! tools_config_file=$(realpath --canonicalize-missing --quiet "${tools_config_file}"); then
+        log_error "failed to parse path: ${tools_config_file}"
+        return 1
+    fi
+    log_trace "${tools_config_file}"
     echo "${tools_config_file}"
 }
 
@@ -727,7 +761,11 @@ function mcbox_get_tools_lib_location() {
     local config_home
     config_home=$(mcbox_get_config_home)
     local tools_lib_file="${MCBOX_TOOLS_LIB_FILE:-${config_home}/tools.bash}"
-    log_debug "MCBOX_TOOLS_LIB_FILE=${tools_lib_file}"
+    if ! tools_lib_file=$(realpath --canonicalize-missing --quiet "${tools_lib_file}"); then
+        log_error "failed to parse path: ${tools_lib_file}"
+        return 1
+    fi
+    log_trace "${tools_lib_file}"
     echo "${tools_lib_file}"
 }
 
@@ -735,7 +773,11 @@ function mcbox_get_version_location() {
     local data_home
     data_home=$(mcbox_get_data_home)
     local version_file="${data_home}/version.json"
-    log_debug "MCBOX_VERSION_FILE=${version_file}"
+    if ! version_file=$(realpath --canonicalize-missing --quiet "${version_file}"); then
+        log_error "failed to parse path: ${version_file}"
+        return 1
+    fi
+    log_trace "${version_file}"
     echo "${version_file}"
 }
 
@@ -770,7 +812,7 @@ function mcbox_load_config() {
 
     local server_config
     if ! server_config=$(json_read_file "${server_config_file}"); then
-        log_error "failed to load ${server_config_file}"
+        log_fatal "failed to load ${server_config_file}"
         return 1
     fi
 
@@ -779,7 +821,7 @@ function mcbox_load_config() {
 
     local tools_config
     if ! tools_config=$(json_read_file "${tools_config_file}"); then
-        log_error "failed to load ${tools_config_file}"
+        log_fatal "failed to load ${tools_config_file}"
         return 1
     fi
 
@@ -787,7 +829,7 @@ function mcbox_load_config() {
     tools_lib_file=$(mcbox_get_tools_lib_location)
 
     if ! is_readable_file "${tools_lib_file}"; then
-        log_error "tools library file not accessible: ${tools_lib_file}"
+        log_fatal "tools library file not accessible: ${tools_lib_file}"
         return 1
     fi
 
@@ -796,7 +838,7 @@ function mcbox_load_config() {
 
     # shellcheck disable=SC1090
     if ! source "${tools_lib_file}"; then
-        log_error "failed to source tools library: ${tools_lib_file}"
+        log_fatal "failed to source tools library: ${tools_lib_file}"
         return 1
     fi
 }
@@ -876,16 +918,20 @@ function mcp_handle_initialize() {
     local server_config
     server_config="${MCBOX_SERVER_CONFIG}"
 
+    log_trace "${server_config}"
+
     if [ -z "${server_config}" ] || ! is_valid_json "${server_config}"; then
-        log_error "server config is empty or invalid JSON"
+        log_error "server config is not valid; using default"
         local server_config_file
         server_config_file=$(mcbox_get_server_config_location)
 
         if ! server_config=$(json_read_file "${server_config_file}"); then
-            log_error "failed to read server configuration file: ${server_config_file}"
+            log_fatal "failed to read server configuration file: ${server_config_file}"
             jsonrpc_create_error_response "${id}" -32603 "Internal error"
             return 1
         fi
+
+        log_trace "${server_config}"
     fi
 
     local server_protocol_version client_protocol_version
@@ -907,17 +953,15 @@ function mcp_handle_notification() {
     local method="${1}"
 
     case "${method}" in
-    "notifications/initialized")
-        log_info "notifications/initialized"
-        return 0
-        ;;
+    "notifications/initialized") ;;
     ## Add other notification types here
     ## "notifications/TODO")
-    ## return 0
     *)
-        return 1 # Not a notification
+        return 1 # Not a notification that we'll handle
         ;;
     esac
+    log_info "${method}"
+    return 0
 }
 
 function mcp_handle_tools_list() {
@@ -925,18 +969,24 @@ function mcp_handle_tools_list() {
 
     local tools_config
     tools_config="${MCBOX_TOOLS_CONFIG}"
+    log_trace "${tools_config}"
 
     if [ -z "${tools_config}" ] || ! is_valid_json "${tools_config}"; then
+        log_error "tools config is not valid; using default"
         local tools_config_file
         tools_config_file=$(mcbox_get_tools_config_location)
 
         if ! tools_config=$(json_read_file "${tools_config_file}"); then
+            log_fatal "failed to read tools configuration file: ${tools_config_file}"
             jsonrpc_create_error_response "${id}" -32603 "Internal error"
             return 1
         fi
+
+        log_trace "${tools_config}"
     fi
 
     if ! jsonschema_validate_schema "${tools_config}" "${TOOLS_SCHEMA}"; then
+        log_fatal "tools config failed schema validation"
         jsonrpc_create_error_response "${id}" -32603 "Internal error"
         return 1
     fi
@@ -946,12 +996,14 @@ function mcp_handle_tools_list() {
 
 function mcp_handle_ping() {
     local id="${1}"
+    log_info "ping id: ${1}"
 
     jsonrpc_create_result_response "${id}" "{}"
 }
 
 function mcp_create_text_content_object() {
     local content="${1}"
+    log_trace "${content}"
 
     local stringified_content
     stringified_content=$(echo "${content}" | text_trim | jq --raw-input --slurp '.')
@@ -977,17 +1029,26 @@ function mcp_handle_tool_call() {
     local tools_config
     tools_config="${MCBOX_TOOLS_CONFIG}"
 
+    log_trace "${tools_config}"
+    log_debug "id: ${id}"
+    log_debug "tool call parameters: ${params}"
+
     if [ -z "${tools_config}" ] || ! is_valid_json "${tools_config}"; then
+        log_error "tools config is not valid; using default"
         local tools_config_file
         tools_config_file=$(mcbox_get_tools_config_location)
 
         if ! tools_config=$(json_read_file "${tools_config_file}"); then
+            log_fatal "failed to read tools configuration file: ${tools_config_file}"
             jsonrpc_create_error_response "${id}" -32603 "Internal error"
             return 1
         fi
+
+        log_trace "${tools_config}"
     fi
 
     if ! jsonschema_validate_schema "${tools_config}" "${TOOLS_SCHEMA}"; then
+        log_fatal "failed to validate tools config"
         jsonrpc_create_error_response "${id}" -32603 "Internal error"
         return 1
     fi
@@ -999,40 +1060,48 @@ function mcp_handle_tool_call() {
     fi
 
     if ! json_object_has_key "${params}" "name"; then
-        log_error "tool call parameters missing required 'name' property"
-        jsonrpc_create_error_response "${id}" -32602 "Invalid params: tool is missing the required 'name' property"
+        local error_message="tool call parameters missing required 'name' property"
+        log_error "${error_message}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
         return 0
     fi
 
     local tool_name
     tool_name=$(echo "${params}" | jq --raw-output '.name')
+    log_debug "tool: ${tool_name}"
 
     if ! [[ "${tool_name}" =~ ^[a-zA-Z0-9_]+$ ]]; then
-        log_error "tool name is malformed: ${tool_name}"
-        jsonrpc_create_error_response "${id}" -32602 "Invalid params: tool name is malformed"
+        local error_message="tool name is malformed"
+        log_error "${error_message}: ${tool_name}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
         return 0
     fi
 
     if ! echo "${tools_config}" | jq --exit-status --arg name "${tool_name}" '.tools | any(.name == $name)' >/dev/null 2>&1; then
-        log_error "tool not found: ${tool_name}"
-        jsonrpc_create_error_response "${id}" -32602 "Invalid params: tool not found: ${tool_name}"
+        local error_message="tool not found"
+        log_error "${error_message}: ${tool_name}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
         return 0
     fi
 
     local input_schema
     input_schema=$(echo "${tools_config}" | jq --arg tool_name "${tool_name}" '.tools[] | select(.name == $tool_name) | .inputSchema // null')
+    log_debug "tool input schema: ${input_schema}"
 
     if [ "${input_schema}" == "null" ]; then
-        log_fatal "inputSchema not defined for tool: ${tool_name}"
+        log_fatal "input schema is not defined for tool: ${tool_name}"
         jsonrpc_create_error_response "${id}" -32603 "Internal error"
         return 1
     fi
 
     local arguments
     arguments=$(echo "${params}" | jq '.arguments // {}')
+    log_debug "tool arguments: ${arguments}"
 
     if ! jsonschema_validate_schema "${arguments}" "${input_schema}"; then
-        jsonrpc_create_error_response "${id}" -32602 "Invalid params: tool arguments do not match inputSchema"
+        local error_message="tool arguments do not match inputSchema"
+        log_error "${error_message}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
         return 0
     fi
 
@@ -1049,13 +1118,13 @@ function mcp_handle_tool_call() {
             fi
 
             if ! mcp_result=$(mcp_create_text_content_object "${content}"); then
-                log_error "${error_message}"
+                log_fatal "${error_message}"
                 jsonrpc_create_error_response "${id}" -32603 "Internal error"
                 return 1
             fi
 
             if ! mcp_result=$(json_merge_objects "${mcp_result}" '{"isError":true}'); then
-                log_error "${error_message}"
+                log_fatal "${error_message}"
                 jsonrpc_create_error_response "${id}" -32603 "Internal error"
                 return 1
             fi
@@ -1064,30 +1133,33 @@ function mcp_handle_tool_call() {
             jsonrpc_create_result_response "${id}" "${mcp_result}"
             return 0
         fi
+        log_debug "tool execution result: ${content}"
     else
-        log_error "tool not found: ${tool_name}"
+        log_fatal "tool not available: ${tool_name}"
         jsonrpc_create_error_response "${id}" -32603 "Internal error"
         return 1
     fi
 
     if ! mcp_result=$(mcp_create_text_content_object "${content}"); then
-        log_error "failed to format content"
+        log_fatal "failed to format content"
         jsonrpc_create_error_response "${id}" -32603 "Internal error"
         return 1
     fi
 
     local output_schema
     output_schema=$(echo "${tools_config}" | jq --arg tool_name "${tool_name}" '.tools[] | select(.name == $tool_name) | .outputSchema // null')
+    log_debug "tool output schema: ${output_schema}"
 
     if [ "${output_schema}" != "null" ]; then
         if ! jsonschema_validate_schema "${content}" "${output_schema}"; then
-            log_error "tool result does not match outputSchema"
-            jsonrpc_create_error_response "${id}" -32603 "Internal error: tool result does not match outputSchema"
+            local error_message="tool output does not match outputSchema"
+            log_error "${error_message}"
+            jsonrpc_create_error_response "${id}" -32603 "Internal error: ${error_message}"
             return 0
         fi
 
         if ! mcp_result=$(json_merge_objects "${mcp_result}" '{"structuredContent":'"${content}"'}'); then
-            log_error "failed to format content"
+            log_fatal "failed to format content"
             jsonrpc_create_error_response "${id}" -32603 "Internal error"
             return 1
         fi
@@ -1102,8 +1174,11 @@ function mcp_process_request() {
 
     # Ignore empty messages
     if [ -z "${input}" ]; then
+        log_debug "empty request"
         return 0
     fi
+
+    log_trace "${input}"
 
     if ! is_valid_json "${input}"; then
         log_error "received invalid JSON in request"
@@ -1120,22 +1195,25 @@ function mcp_process_request() {
         return 0
     fi
 
-    # Extract id after validating JSON
     id=$(echo "${input}" | jq --compact-output --monochrome-output '.id // null')
 
     if ! jsonrpc_validate_id "${id}"; then
-        jsonrpc_create_error_response "${id}" -32600 "Invalid request"
+        local error_message="invalid id"
+        log_error "${error_message}: ${id}"
+        jsonrpc_create_error_response "${id}" -32600 "Invalid request: ${error_message}"
         return 0
     fi
 
     if ! json_object_has_key "${input}" "method"; then
-        log_error "request missing required 'method' property"
-        jsonrpc_create_error_response "${id}" -32600 "Invalid request"
+        local error_message="missing required 'method' property"
+        log_error "request ${error_message}"
+        jsonrpc_create_error_response "${id}" -32600 "Invalid request: ${error_message}"
         return 0
     fi
 
     local method
     method=$(echo "${input}" | jq --raw-output '.method')
+    log_trace "${method}"
 
     if mcp_handle_notification "${method}"; then
         return 0
@@ -1144,23 +1222,29 @@ function mcp_process_request() {
     local params result
 
     params=$(echo "${input}" | jq --compact-output --monochrome-output '.params')
+    log_trace "${params}"
 
     case "${method}" in
     "initialize")
         mcp_handle_initialize "${id}" "${params}"
+        return 0
         ;;
     "tools/list")
         mcp_handle_tools_list "${id}"
+        return 0
         ;;
     "tools/call")
         mcp_handle_tool_call "${id}" "${params}"
+        return 0
         ;;
     "ping")
         mcp_handle_ping "${id}"
+        return 0
         ;;
     *)
         log_error "method not found: ${method}"
         jsonrpc_create_error_response "${id}" -32601 "Method not found: ${method}"
+        return 0
         ;;
     esac
 }
@@ -1178,6 +1262,8 @@ function mcp_server() {
     server_tag=$(mcbox_get_server_tag)
     server_tag=": ${server_tag}"
 
+    version="$(mcbox_version)"
+    log_info "${version}"
     log_info "MCP Server${server_tag}: started"
 
     while IFS= read -r request; do

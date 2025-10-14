@@ -14,6 +14,7 @@ fi
 
 # shellcheck disable=SC1090
 source "${MCBOX_CORE_LIB_FILE}"
+log_trace "${MCBOX_CORE_LIB_FILE}"
 
 function shutdown() {
     local server_tag
@@ -74,7 +75,7 @@ function parse_arguments() {
         key="${1}"
         case "${key}" in
         --version | -v)
-            mcbox_version
+            mcbox_version >&2
             exit 0
             ;;
 

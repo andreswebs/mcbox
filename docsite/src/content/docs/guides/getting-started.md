@@ -34,30 +34,30 @@ For example:
 
 - for **Claude Desktop**:
 
-    ```json
-    {
-        "mcpServers": {
-            "mcbox": {
-                "command": "mcbox",
-                "args": []
-            }
-        }
+  ```json
+  {
+    "mcpServers": {
+      "mcbox": {
+        "command": "mcbox",
+        "args": []
+      }
     }
-    ```
+  }
+  ```
 
 - for **GitHub Copilot**:
 
-    ```json
-    {
-        "servers": {
-            "mcbox": {
-                "type": "stdio",
-                "command": "mcbox",
-                "args": []
-            }
-        }
+  ```json
+  {
+    "servers": {
+      "mcbox": {
+        "type": "stdio",
+        "command": "mcbox",
+        "args": []
+      }
     }
-    ```
+  }
+  ```
 
 - for **other MCP clients**: use the command `mcbox`
 
