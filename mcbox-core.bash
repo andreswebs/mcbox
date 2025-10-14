@@ -184,7 +184,6 @@ function mcbox_check_dependencies() {
         return 1
     fi
 
-
     # Check if realpath supports --canonicalize-missing and --quiet
     local realpath_help
     if ! realpath_help=$(realpath --help 2>&1); then
@@ -954,8 +953,7 @@ function mcp_handle_notification() {
     local method="${1}"
 
     case "${method}" in
-    "notifications/initialized")
-        ;;
+    "notifications/initialized") ;;
     ## Add other notification types here
     ## "notifications/TODO")
     *)
