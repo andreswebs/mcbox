@@ -309,6 +309,18 @@ source mcbox-core.bash
 is_valid_json '{"valid":"json"}'
 ```
 
+## Troubleshooting
+
+### Error from realpath
+
+If you see this error:
+
+```txt
+installed version of realpath does not support --canonicalize-missing (required); update your version of 'coreutils'
+```
+
+You need to upgrade to a new version of the GNU coreutils package.
+
 ## Getting Help
 
 - **GitHub Discussions**: For questions and proposals
