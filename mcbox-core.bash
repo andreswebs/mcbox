@@ -804,7 +804,7 @@ function mcbox_version() {
         log_warn "failed to read version file: ${version_file}"
     fi
 
-    echo_stderr "${version}"
+    echo "${version}"
 }
 
 function mcbox_load_config() {
@@ -1264,7 +1264,8 @@ function mcp_server() {
     server_tag=$(mcbox_get_server_tag)
     server_tag=": ${server_tag}"
 
-    log_info "$(mcbox_version)"
+    version="$(mcbox_version)"
+    log_info "${version}"
     log_info "MCP Server${server_tag}: started"
 
     while IFS= read -r request; do
