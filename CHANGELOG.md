@@ -8,11 +8,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## Unreleased
 
-[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[b9ca003](b9ca003b0738da76330a11577f81dbe8c0a8e2d3)
+[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[cb5d90b](cb5d90b0f661935dfc107ab64802b832d5a58ae4)
 
 ### Refactor
 
 - Add more debug logging (#15) ([b9ca003](b9ca003b0738da76330a11577f81dbe8c0a8e2d3)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Logging ([cb5d90b](cb5d90b0f661935dfc107ab64802b832d5a58ae4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ## 0.1.4 - 2025-10-10
 
