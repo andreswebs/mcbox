@@ -118,32 +118,32 @@ function log() {
 }
 
 function log_trace() {
-    local -r message="${1}"
+    local -r message="${1:-}"
     log "TRACE" "${message}"
 }
 
 function log_debug() {
-    local -r message="${1}"
+    local -r message="${1:-}"
     log "DEBUG" "${message}"
 }
 
 function log_info() {
-    local -r message="${1}"
+    local -r message="${1:-}"
     log "INFO" "${message}"
 }
 
 function log_warn {
-    local -r message="${1}"
+    local -r message="${1:-}"
     log "WARN" "${message}"
 }
 
 function log_error {
-    local -r message="${1}"
+    local -r message="${1:-}"
     log "ERROR" "${message}"
 }
 
 function log_fatal {
-    local -r message="${1}"
+    local -r message="${1:-}"
     log "FATAL" "${message}"
 }
 
@@ -1099,6 +1099,7 @@ function mcp_handle_tool_call() {
     log_debug "tool arguments: ${arguments}"
 
     if ! jsonschema_validate_schema "${arguments}" "${input_schema}"; then
+        log_trace
         local error_message="tool arguments do not match inputSchema"
         log_error "${error_message}"
         jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
@@ -1111,7 +1112,9 @@ function mcp_handle_tool_call() {
     tool="${tool_name_prefix}${tool_name}"
 
     if is_cmd_available "${tool}"; then
-        if ! content=$(${tool} "${arguments}"); then
+        log_trace "tool found"
+        if ! content=$(${tool} "${arguments}" 2>&1); then
+            log_debug "${content}"
             local error_message="tool execution failed"
             if [ -n "${content}" ] && [ "${content}" != "null" ]; then
                 error_message="${error_message}: ${content}"

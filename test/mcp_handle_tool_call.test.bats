@@ -6,6 +6,9 @@ load 'bats-helpers/bats-support/load'
 load 'bats-helpers/bats-assert/load'
 
 setup() {
+
+    export MCBOX_LOG_LEVEL="trace"
+
     export MCBOX_TOOLS_CONFIG_FILE="${BATS_TEST_TMPDIR}/test-tools.json"
 
     cat >"${MCBOX_TOOLS_CONFIG_FILE}" <<'EOF'
@@ -117,6 +120,7 @@ EOF
 
     # shellcheck disable=SC2329
     function tool_failing_tool() {
+        echo "fail!" >&2
         return 1
     }
 
@@ -414,4 +418,13 @@ teardown() {
     assert_success
     assert_output --partial '"result":'
     assert_output --partial '"structuredContent":{"token":""}'
+}
+
+@test "mcp_handle_tool_call: logs tool output with log_debug" {
+    local id="25"
+    local params='{"name": "failing_tool", "arguments": {}}'
+
+    run mcp_handle_tool_call "${id}" "${params}"
+    assert_success
+    assert_output --partial '[mcp_handle_tool_call] fail!'
 }
