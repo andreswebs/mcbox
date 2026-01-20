@@ -11,7 +11,7 @@ CONFIG="${SCRIPT_DIR}/../fixtures/mcp-cli.config.json"
 export PATH="${SCRIPT_DIR}/smoketest-server:${PATH}"
 
 function call_tool() {
-    npx --yes --package @wong2/mcp-cli mcp-cli --config "${CONFIG}" call-tool "${@}"
+    npx --yes --package @wong2/mcp-cli@latest mcp-cli --config "${CONFIG}" call-tool "${@}"
 }
 
 call_tool "${@}"
