@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 const isLocal = process.env.LOCAL_DOCS;
 
-const config: AstroUserConfig<never, never, never> = {
+const config: AstroUserConfig<never, never> = {
     base: '/mcbox',
     integrations: [
         starlight({
