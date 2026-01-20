@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import type { AstroUserConfig } from 'astro';
 import starlight from '@astrojs/starlight';
-
 import tailwindcss from '@tailwindcss/vite';
 
 const isLocal = process.env.LOCAL_DOCS;
