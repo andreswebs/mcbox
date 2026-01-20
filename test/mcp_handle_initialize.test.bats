@@ -15,7 +15,7 @@ teardown() {
 
 @test "mcp_handle_initialize: should handle valid initialize request with matching protocol version" {
     local id="0"
-    local params='{"protocolVersion": "2025-06-18"}'
+    local params='{"protocolVersion": "2025-11-25"}'
 
     run mcp_handle_initialize "${id}" "${params}"
     assert_success
@@ -31,7 +31,7 @@ teardown() {
 
 @test "mcp_handle_initialize: should fail when server config file does not exist" {
     local id="0"
-    local params='{"protocolVersion": "2025-06-18"}'
+    local params='{"protocolVersion": "2025-11-25"}'
 
     # shellcheck disable=SC2030
     export MCBOX_SERVER_CONFIG_FILE="${BATS_TEST_TMPDIR}/inexistent.json"
@@ -42,7 +42,7 @@ teardown() {
 
 @test "mcp_handle_initialize: should fail when server config file contains invalid JSON" {
     local id="0"
-    local params='{"protocolVersion": "2025-06-18"}'
+    local params='{"protocolVersion": "2025-11-25"}'
 
     local invalid_config_file="${BATS_TEST_TMPDIR}/invalid.json"
     echo "{ invalid json }" >"${invalid_config_file}"
@@ -56,7 +56,7 @@ teardown() {
 
 @test "mcp_handle_initialize: should handle string ID correctly" {
     local id='"test-id"'
-    local params='{"protocolVersion": "2025-06-18"}'
+    local params='{"protocolVersion": "2025-11-25"}'
 
     run mcp_handle_initialize "${id}" "${params}"
     assert_success
@@ -65,7 +65,7 @@ teardown() {
 
 @test "mcp_handle_initialize: should handle null ID correctly" {
     local id="null"
-    local params='{"protocolVersion": "2025-06-18"}'
+    local params='{"protocolVersion": "2025-11-25"}'
 
     run mcp_handle_initialize "${id}" "${params}"
     assert_success
@@ -90,7 +90,7 @@ teardown() {
 
 @test "mcp_handle_initialize: should use default config file path when MCBOX_SERVER_CONFIG_FILE is not set" {
     local id="0"
-    local params='{"protocolVersion": "2025-06-18"}'
+    local params='{"protocolVersion": "2025-11-25"}'
 
     # Create config in default location (XDG_CONFIG_HOME)
     export XDG_CONFIG_HOME="${BATS_TEST_TMPDIR}"
