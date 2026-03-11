@@ -44,6 +44,8 @@ setup() {
         echo "{}" >"${MCBOX_CONFIG_HOME}/server.json"
         echo "{}" >"${MCBOX_CONFIG_HOME}/tools.json"
         echo "{}" >"${MCBOX_CONFIG_HOME}/tools.bash"
+        echo "{}" >"${MCBOX_CONFIG_HOME}/prompts.json"
+        echo "{}" >"${MCBOX_CONFIG_HOME}/prompts.bash"
     fi
 
 }
@@ -73,6 +75,8 @@ setup() {
     assert_file_exists "${MCBOX_CONFIG_HOME}/server.json"
     assert_file_exists "${MCBOX_CONFIG_HOME}/tools.json"
     assert_file_exists "${MCBOX_CONFIG_HOME}/tools.bash"
+    assert_file_exists "${MCBOX_CONFIG_HOME}/prompts.json"
+    assert_file_exists "${MCBOX_CONFIG_HOME}/prompts.bash"
 }
 
 @test "cli: mcbox init-config --overwrite" {
@@ -83,8 +87,12 @@ setup() {
     assert_file_exists "${MCBOX_CONFIG_HOME}/server.json"
     assert_file_exists "${MCBOX_CONFIG_HOME}/tools.json"
     assert_file_exists "${MCBOX_CONFIG_HOME}/tools.bash"
+    assert_file_exists "${MCBOX_CONFIG_HOME}/prompts.json"
+    assert_file_exists "${MCBOX_CONFIG_HOME}/prompts.bash"
 
     refute_line --partial "{}" <"${MCBOX_CONFIG_HOME}/server.json"
     refute_line --partial "{}" <"${MCBOX_CONFIG_HOME}/tools.json"
     refute_line --partial "{}" <"${MCBOX_CONFIG_HOME}/tools.bash"
+    refute_line --partial "{}" <"${MCBOX_CONFIG_HOME}/prompts.json"
+    refute_line --partial "{}" <"${MCBOX_CONFIG_HOME}/prompts.bash"
 }

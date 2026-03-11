@@ -1,0 +1,26 @@
+{
+  "prompts": [
+    {
+      "name": "greet",
+      "description": "Generate a greeting message",
+      "arguments": [
+        {
+          "name": "name",
+          "description": "The name to greet",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "farewell",
+      "description": "Generate a farewell message",
+      "arguments": [
+        {
+          "name": "name",
+          "description": "The name to say farewell to",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

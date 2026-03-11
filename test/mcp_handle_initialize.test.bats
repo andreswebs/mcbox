@@ -11,6 +11,7 @@ setup() {
 
 teardown() {
     unset MCBOX_SERVER_CONFIG_FILE
+    unset MCBOX_PROMPTS_CONFIG
 }
 
 @test "mcp_handle_initialize: should handle valid initialize request with matching protocol version" {
@@ -109,4 +110,26 @@ teardown() {
     rm "${default_config_file}"
 
     assert_success
+}
+
+@test "mcp_handle_initialize: should include prompts capability when prompts are configured" {
+    local id="0"
+    local params='{"protocolVersion": "2025-11-25"}'
+
+    export MCBOX_PROMPTS_CONFIG='{"prompts":[{"name":"greet"}]}'
+
+    run mcp_handle_initialize "${id}" "${params}"
+    assert_success
+    assert_output --partial '"prompts":{"listChanged":false}'
+}
+
+@test "mcp_handle_initialize: should not include prompts capability when prompts array is empty" {
+    local id="0"
+    local params='{"protocolVersion": "2025-11-25"}'
+
+    export MCBOX_PROMPTS_CONFIG='{"prompts":[]}'
+
+    run mcp_handle_initialize "${id}" "${params}"
+    assert_success
+    refute_output --partial '"prompts"'
 }
