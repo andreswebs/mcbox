@@ -124,6 +124,56 @@ export MCBOX_TOOLS_FUNCTION_NAME_PREFIX="custom_tool_"
 # Tools would be named: custom_tool_example, custom_tool_another, etc.
 ```
 
+### `MCBOX_PROMPTS_CONFIG_FILE`
+
+**Default:** `$MCBOX_CONFIG_HOME/prompts.json` (which defaults to `$XDG_CONFIG_HOME/mcbox/prompts.json`)
+
+Absolute path to the prompts configuration file containing prompt definitions and argument specifications.
+
+**Example usage:**
+
+```bash
+export MCBOX_PROMPTS_CONFIG_FILE="/path/to/custom/prompts.json"
+```
+
+### `MCBOX_PROMPTS_LIB_FILE`
+
+**Default:** `$MCBOX_CONFIG_HOME/prompts.bash` (which defaults to `$XDG_CONFIG_HOME/mcbox/prompts.bash`)
+
+Absolute path to the prompts implementation file containing Bash functions that implement the prompts.
+
+**Example usage:**
+
+```bash
+export MCBOX_PROMPTS_LIB_FILE="/path/to/custom/prompts.bash"
+```
+
+### `MCBOX_PROMPTS_FUNCTION_NAME_PREFIX`
+
+**Default:** `prompt_`
+
+Prefix used for prompt function names in the prompts library file. Prompt functions must follow the naming convention `${prefix}${prompt_name}`, where hyphens and dots in the prompt name are replaced by underscores.
+
+**Example usage:**
+
+```bash
+export MCBOX_PROMPTS_FUNCTION_NAME_PREFIX="custom_prompt_"
+# Prompts would be named: custom_prompt_greet, custom_prompt_code_review, etc.
+```
+
+### `MCBOX_PROMPTS_PAGE_SIZE`
+
+**Default:** `0` (no pagination, all prompts returned in a single response)
+
+Number of prompts to return per page in `prompts/list` responses. Set to a positive integer to enable cursor-based pagination. When set to `0` or a negative value, all prompts are returned in a single response.
+
+**Example usage:**
+
+```bash
+export MCBOX_PROMPTS_PAGE_SIZE="10"
+# prompts/list will return at most 10 prompts per page
+```
+
 ## Logging Configuration Variables
 
 These variables control mcbox's logging behavior and follow OpenTelemetry standards.
@@ -204,30 +254,40 @@ Contains the parsed JSON content of the server configuration file. Set automatic
 
 Contains the parsed JSON content of the tools configuration file. Set automatically by `mcbox_load_config()`.
 
+### `MCBOX_PROMPTS_CONFIG`
+
+Contains the parsed JSON content of the prompts configuration file. Set automatically by `mcbox_load_config()`.
+
 ## Default File Locations
 
 When using default settings, mcbox expects files in these locations:
 
-| File Type     | Default Location                                                                      |
-| ------------- | ------------------------------------------------------------------------------------- |
-| Server Config | `$MCBOX_CONFIG_HOME/server.json` (typically `~/.config/mcbox/server.json`)            |
-| Tools Config  | `$MCBOX_CONFIG_HOME/tools.json` (typically `~/.config/mcbox/tools.json`)              |
-| Tools Library | `$MCBOX_CONFIG_HOME/tools.bash` (typically `~/.config/mcbox/tools.bash`)              |
-| Core Library  | `$MCBOX_DATA_HOME/mcbox-core.bash` (typically `~/.local/share/mcbox/mcbox-core.bash`) |
+| File Type       | Default Location                                                                      |
+| --------------- | ------------------------------------------------------------------------------------- |
+| Server Config   | `$MCBOX_CONFIG_HOME/server.json` (typically `~/.config/mcbox/server.json`)            |
+| Tools Config    | `$MCBOX_CONFIG_HOME/tools.json` (typically `~/.config/mcbox/tools.json`)              |
+| Tools Library   | `$MCBOX_CONFIG_HOME/tools.bash` (typically `~/.config/mcbox/tools.bash`)              |
+| Prompts Config  | `$MCBOX_CONFIG_HOME/prompts.json` (typically `~/.config/mcbox/prompts.json`)          |
+| Prompts Library | `$MCBOX_CONFIG_HOME/prompts.bash` (typically `~/.config/mcbox/prompts.bash`)          |
+| Core Library    | `$MCBOX_DATA_HOME/mcbox-core.bash` (typically `~/.local/share/mcbox/mcbox-core.bash`) |
 
 ## Environment Variables Summary
 
 ### Configuration Variables
 
-| Variable                           | Default                            | Purpose                       |
-| ---------------------------------- | ---------------------------------- | ----------------------------- |
-| `MCBOX_DATA_HOME`                  | `$XDG_DATA_HOME/mcbox`             | mcbox data directory          |
-| `MCBOX_CONFIG_HOME`                | `$XDG_CONFIG_HOME/mcbox`           | mcbox configuration directory |
-| `MCBOX_SERVER_CONFIG_FILE`         | `$MCBOX_CONFIG_HOME/server.json`   | Server configuration file     |
-| `MCBOX_TOOLS_CONFIG_FILE`          | `$MCBOX_CONFIG_HOME/tools.json`    | Tools configuration file      |
-| `MCBOX_TOOLS_LIB_FILE`             | `$MCBOX_CONFIG_HOME/tools.bash`    | Tools implementation file     |
-| `MCBOX_CORE_LIB_FILE`              | `$MCBOX_DATA_HOME/mcbox-core.bash` | Core library file             |
-| `MCBOX_TOOLS_FUNCTION_NAME_PREFIX` | `tool_`                            | Tool function naming prefix   |
+| Variable                             | Default                            | Purpose                              |
+| ------------------------------------ | ---------------------------------- | ------------------------------------ |
+| `MCBOX_DATA_HOME`                    | `$XDG_DATA_HOME/mcbox`             | mcbox data directory                 |
+| `MCBOX_CONFIG_HOME`                  | `$XDG_CONFIG_HOME/mcbox`           | mcbox configuration directory        |
+| `MCBOX_SERVER_CONFIG_FILE`           | `$MCBOX_CONFIG_HOME/server.json`   | Server configuration file            |
+| `MCBOX_TOOLS_CONFIG_FILE`            | `$MCBOX_CONFIG_HOME/tools.json`    | Tools configuration file             |
+| `MCBOX_TOOLS_LIB_FILE`               | `$MCBOX_CONFIG_HOME/tools.bash`    | Tools implementation file            |
+| `MCBOX_CORE_LIB_FILE`                | `$MCBOX_DATA_HOME/mcbox-core.bash` | Core library file                    |
+| `MCBOX_TOOLS_FUNCTION_NAME_PREFIX`   | `tool_`                            | Tool function naming prefix          |
+| `MCBOX_PROMPTS_CONFIG_FILE`          | `$MCBOX_CONFIG_HOME/prompts.json`  | Prompts configuration file           |
+| `MCBOX_PROMPTS_LIB_FILE`             | `$MCBOX_CONFIG_HOME/prompts.bash`  | Prompts implementation file          |
+| `MCBOX_PROMPTS_FUNCTION_NAME_PREFIX` | `prompt_`                          | Prompt function naming prefix        |
+| `MCBOX_PROMPTS_PAGE_SIZE`            | `0`                                | Prompts per page (0 = no pagination) |
 
 ### Logging Variables
 
@@ -278,6 +338,8 @@ mkdir -p /opt/mcbox/data /opt/mcbox/config
 export MCBOX_SERVER_CONFIG_FILE="/etc/mcbox/server.json"
 export MCBOX_TOOLS_CONFIG_FILE="/etc/mcbox/tools.json"
 export MCBOX_TOOLS_LIB_FILE="/usr/local/lib/mcbox/tools.bash"
+export MCBOX_PROMPTS_CONFIG_FILE="/etc/mcbox/prompts.json"
+export MCBOX_PROMPTS_LIB_FILE="/usr/local/lib/mcbox/prompts.bash"
 export MCBOX_CORE_LIB_FILE="/usr/local/lib/mcbox/mcbox-core.bash"
 ```
 
@@ -289,6 +351,8 @@ PROJECT_DIR="/path/to/mcbox-project"
 export MCBOX_SERVER_CONFIG_FILE="${PROJECT_DIR}/config/server.json"
 export MCBOX_TOOLS_CONFIG_FILE="${PROJECT_DIR}/config/tools.json"
 export MCBOX_TOOLS_LIB_FILE="${PROJECT_DIR}/tools.bash"
+export MCBOX_PROMPTS_CONFIG_FILE="${PROJECT_DIR}/config/prompts.json"
+export MCBOX_PROMPTS_LIB_FILE="${PROJECT_DIR}/prompts.bash"
 export MCBOX_CORE_LIB_FILE="${PROJECT_DIR}/mcbox-core.bash"
 ```
 

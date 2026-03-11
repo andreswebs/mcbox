@@ -24,6 +24,7 @@ const config: AstroUserConfig<never, never> = {
                         // Each item here is one entry in the navigation menu.
                         { label: 'Getting Started', slug: 'guides/getting-started' },
                         { label: 'Adding Tools', slug: 'guides/adding-tools' },
+                        { label: 'Adding Prompts', slug: 'guides/adding-prompts' },
                         { label: 'Development', slug: 'guides/development' },
                     ],
                 },

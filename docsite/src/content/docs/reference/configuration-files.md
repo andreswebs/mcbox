@@ -1,19 +1,21 @@
 ---
 title: Configuration Files
-description: Complete reference for mcbox configuration files that enable pluggable tool customization.
+description: Complete reference for mcbox configuration files that enable pluggable tool and prompt customization.
 ---
 
-**mcbox** uses three configuration files to define server metadata, tool specifications, and tool implementations. These files enable you to create customized local instances of **mcbox** by plugging in new tools on demand.
+**mcbox** uses configuration files to define server metadata, tool specifications, tool implementations, prompt definitions, and prompt implementations. These files enable you to create customized local instances of **mcbox** by plugging in new tools and prompts on demand.
 
 ## Overview
 
-The three configuration files work together to create a complete MCP server instance:
+The configuration files work together to create a complete MCP server instance:
 
-| File          | Purpose                                | Format      |
-| ------------- | -------------------------------------- | ----------- |
-| `server.json` | Server metadata and MCP capabilities   | JSON        |
-| `tools.json`  | Tool definitions and JSON schemas      | JSON        |
-| `tools.bash`  | Tool implementations as Bash functions | Bash script |
+| File           | Purpose                                  | Format      |
+| -------------- | ---------------------------------------- | ----------- |
+| `server.json`  | Server metadata and MCP capabilities     | JSON        |
+| `tools.json`   | Tool definitions and JSON schemas        | JSON        |
+| `tools.bash`   | Tool implementations as Bash functions   | Bash script |
+| `prompts.json` | Prompt definitions and arguments         | JSON        |
+| `prompts.bash` | Prompt implementations as Bash functions | Bash script |
 
 ## server.json
 
@@ -93,17 +95,17 @@ Server configuration file containing MCP protocol metadata and capability declar
 
 ```json
 {
-  "protocolVersion": "2025-06-18",
-  "serverInfo": {
-    "name": "nodejs-toolbox",
-    "version": "1.0.0"
-  },
-  "capabilities": {
-    "tools": {
-      "listChanged": true
-    }
-  },
-  "instructions": "Custom mcbox instance with development tools for Node.js projects."
+    "protocolVersion": "2025-06-18",
+    "serverInfo": {
+        "name": "nodejs-toolbox",
+        "version": "1.0.0"
+    },
+    "capabilities": {
+        "tools": {
+            "listChanged": true
+        }
+    },
+    "instructions": "Custom mcbox instance with development tools for Node.js projects."
 }
 ```
 
@@ -189,48 +191,48 @@ Tool configuration file containing tool definitions, descriptions, and JSON sche
 
 ```json
 {
-  "tools": [
-    {
-      "name": "file_read",
-      "description": "Read the contents of a file",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string",
-            "description": "Path to the file to read"
-          },
-          "encoding": {
-            "type": "string",
-            "enum": ["utf-8", "ascii", "base64"],
-            "default": "utf-8"
-          }
+    "tools": [
+        {
+            "name": "file_read",
+            "description": "Read the contents of a file",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Path to the file to read"
+                    },
+                    "encoding": {
+                        "type": "string",
+                        "enum": ["utf-8", "ascii", "base64"],
+                        "default": "utf-8"
+                    }
+                },
+                "required": ["path"]
+            },
+            "outputSchema": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "number"
+                    }
+                },
+                "required": ["content"]
+            }
         },
-        "required": ["path"]
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string"
-          },
-          "size": {
-            "type": "number"
-          }
-        },
-        "required": ["content"]
-      }
-    },
-    {
-      "name": "system_info",
-      "description": "Get basic system information",
-      "inputSchema": {
-        "type": "object",
-        "properties": {},
-        "required": []
-      }
-    }
-  ]
+        {
+            "name": "system_info",
+            "description": "Get basic system information",
+            "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        }
+    ]
 }
 ```
 
@@ -363,24 +365,209 @@ function tool_system_info() {
 export -f tool_file_read tool_system_info
 ```
 
+## prompts.json
+
+Prompt configuration file containing prompt definitions, descriptions, and argument specifications.
+
+### Schema
+
+```txt
+{
+  "prompts": [
+    {
+      "name": string,
+      "title": string,
+      "description": string,
+      "arguments": [
+        {
+          "name": string,
+          "description": string,
+          "required": boolean
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Fields
+
+#### `prompts`
+
+**Type:** `array`
+**Required:** Yes
+**Description:** Array of prompt definitions.
+
+#### `prompts[].name`
+
+**Type:** `string`
+**Required:** Yes
+**Description:** Unique prompt identifier. Must match the function name in `prompts.bash` (without the configured prefix, with hyphens and dots converted to underscores).
+
+#### `prompts[].title`
+
+**Type:** `string`
+**Required:** No
+**Description:** Human-readable display title for the prompt.
+
+#### `prompts[].description`
+
+**Type:** `string`
+**Required:** No
+**Description:** Human-readable description of the prompt's purpose and functionality.
+
+#### `prompts[].arguments`
+
+**Type:** `array`
+**Required:** No
+**Description:** Array of argument definitions for the prompt.
+
+#### `prompts[].arguments[].name`
+
+**Type:** `string`
+**Required:** Yes
+**Description:** Argument name. Must be provided exactly as-is in the `prompts/get` request.
+
+#### `prompts[].arguments[].description`
+
+**Type:** `string`
+**Required:** No
+**Description:** Human-readable description of the argument.
+
+#### `prompts[].arguments[].required`
+
+**Type:** `boolean`
+**Required:** No
+**Description:** Whether this argument is required. If `true`, the argument must be present in the `prompts/get` request or the server returns an error.
+
+### Example
+
+```json
+{
+    "prompts": [
+        {
+            "name": "greet",
+            "description": "Generate a greeting message",
+            "arguments": [
+                {
+                    "name": "name",
+                    "description": "The name to greet",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "name": "code-review",
+            "title": "Code Review",
+            "description": "Start a code review session"
+        }
+    ]
+}
+```
+
+## prompts.bash
+
+Prompt implementation file containing Bash functions that generate prompt messages.
+
+### Function Naming Convention
+
+Prompt functions must follow the naming pattern:
+
+```sh
+${MCBOX_PROMPTS_FUNCTION_NAME_PREFIX}${prompt_name}
+```
+
+Where:
+
+- `MCBOX_PROMPTS_FUNCTION_NAME_PREFIX` defaults to `prompt_` (configurable via environment variable)
+- `prompt_name` matches the `name` field from `prompts.json`, with hyphens (`-`) and dots (`.`) replaced by underscores (`_`)
+
+### Function Signature
+
+```bash
+function prompt_example() {
+    local arguments="${1}"
+    # Prompt implementation
+    echo "${result_json}"
+}
+```
+
+#### Parameters
+
+- `arguments`: JSON object containing the prompt arguments as key-value string pairs
+
+#### Return Value
+
+- **Success**: Output a JSON object with a `messages` array to stdout and return exit code 0
+- **Failure**: Return non-zero exit code, optionally echoing error message to stdout
+
+### Output Format
+
+Prompt functions must return a JSON object containing a `messages` array with MCP message objects:
+
+```json
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": {
+                "type": "text",
+                "text": "Your prompt text here"
+            }
+        }
+    ]
+}
+```
+
+### Complete Example
+
+```bash
+#!/usr/bin/env bash
+
+function prompt_greet() {
+    local arguments="${1}"
+    local name
+    name=$(echo "${arguments}" | jq --raw-output '.name')
+
+    jq --compact-output --null-input --arg name "${name}" '{
+        "messages": [
+            {
+                "role": "user",
+                "content": {
+                    "type": "text",
+                    "text": ("Hello " + $name + "! How can I help you today?")
+                }
+            }
+        ]
+    }'
+}
+
+function prompt_code_review() {
+    echo '{"messages":[{"role":"user","content":{"type":"text","text":"Please review the following code for quality, correctness, and potential improvements."}}]}'
+}
+
+export -f prompt_greet prompt_code_review
+```
+
 ## Plugin Development Workflow
 
-Creating custom **mcbox** instances with new tools:
+Creating custom **mcbox** instances with new tools and prompts:
 
 1. **Define Tools** - Add tool definitions to `tools.json` with proper schemas
-2. **Implement Functions** - Write corresponding Bash functions in `tools.bash`
-3. **Configure Server** - Update `server.json` with appropriate metadata
-4. **Test Tools** - Verify functionality using MCP Inspector or integration tests
-5. **Deploy** - Place configuration files in appropriate locations
+2. **Define Prompts** - Add prompt definitions to `prompts.json` with argument specifications
+3. **Implement Functions** - Write corresponding Bash functions in `tools.bash` and `prompts.bash`
+4. **Configure Server** - Update `server.json` with appropriate metadata
+5. **Test** - Verify functionality using MCP Inspector or integration tests
+6. **Deploy** - Place configuration files in appropriate locations
 
 ### Best Practices
 
 - **Validate Input**: Always validate input parameters using the provided JSON schemas
 - **Handle Errors**: Return appropriate exit codes and error messages
 - **Use jq**: Leverage `jq` for JSON processing and output generation
-- **Export Functions**: Remember to export all tool functions
-- **Test Thoroughly**: Verify tools work correctly with various input scenarios
-- **Document Tools**: Provide clear, helpful descriptions in `tools.json`
+- **Export Functions**: Remember to export all tool and prompt functions
+- **Test Thoroughly**: Verify tools and prompts work correctly with various input scenarios
+- **Document**: Provide clear, helpful descriptions in `tools.json` and `prompts.json`
 
 ### Schema Validation
 
@@ -388,6 +575,8 @@ Creating custom **mcbox** instances with new tools:
 
 - Tool input against `inputSchema` before function execution
 - Tool output against `outputSchema` (if defined) after function execution
+- Prompt definitions against the built-in prompt schema at startup
+- Prompt arguments (required/unknown) before function execution
 - JSON structure and required fields compliance
 
-Invalid input or output will result in MCP error responses without executing the tool function.
+Invalid input or output will result in MCP error responses without executing the function.
