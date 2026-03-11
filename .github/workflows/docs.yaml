@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Build
-        uses: withastro/action@2226b5671ff302b175d9843add614af27e60bbfc # v5.0.0
+        uses: withastro/action@fc88a7002f0c62327f26fb1b15f2a1d581249278 # v5.1.0
         with:
           node-version: 24
           path: ./docsite
