@@ -9,5 +9,4 @@ if ! command -v "shellcheck" &>/dev/null; then
     exit 1
 fi
 
-# see: https://www.shellcheck.net/wiki/SC2038
-find "${SCRIPT_DIR}/.." -type f -name '*.bash' ! -path '*/bats*/*' -print0 | xargs shellcheck
+find "${SCRIPT_DIR}/.." -type f -name '*.bash' ! -path '*/bats*/*' -print0 | xargs --null shellcheck

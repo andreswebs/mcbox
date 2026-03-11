@@ -1,1 +1,0 @@
-../../.devspecs/prompts/devspecs-gather-product-requirements.md

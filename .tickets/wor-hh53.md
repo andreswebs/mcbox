@@ -1,0 +1,26 @@
+---
+id: wor-hh53
+status: open
+deps: []
+links: []
+created: 2026-03-11T00:54:16Z
+type: feature
+priority: 2
+tags: [mcp, validation, tools]
+---
+# Relax tool name validation to allow hyphens and dots
+
+The server validates tool names with ^[a-zA-Z0-9_]+$ (mcbox-core.bash:1073), rejecting names with hyphens or dots. The MCP schema imposes no such restriction. Tool names like read-file or fs.list receive a misleading 'Invalid params: tool name is malformed' error.
+
+Root cause: tool names are used as Bash function name suffixes (tool_${tool_name}), and Bash function names cannot contain hyphens or dots. The restriction is real but should be handled transparently.
+
+Fix:
+1. Relax the validation regex to ^[a-zA-Z0-9_.-]+$
+2. Before constructing the Bash function name, translate - and . to _:
+   function_name=$(printf '%s' "${tool_name}" | tr '.-' '__')
+3. Document the name-to-function mapping in docs/specs/tech.md
+
+## Acceptance Criteria
+
+Tool names containing hyphens (e.g. read-file) and dots (e.g. fs.list) are accepted and dispatched to the corresponding underscore-translated function. Names with other special characters (spaces, slashes, etc.) are still rejected with -32602. New passing tests added for hyphen and dot names. Existing rejection tests still pass. docs/specs/tech.md documents the translation rule. Full test suite passes.
+

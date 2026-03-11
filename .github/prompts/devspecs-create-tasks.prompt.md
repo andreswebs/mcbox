@@ -1,1 +1,0 @@
-../../.devspecs/prompts/devspecs-create-tasks.md

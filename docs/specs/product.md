@@ -1,7 +1,3 @@
----
-applyTo: "**/*"
----
-
 # Product Brief: mcbox
 
 ## Why
@@ -15,15 +11,12 @@ mcbox exists to provide a simple MCP (Model Context Protocol) server implementat
 ## Core Functional Requirements
 
 1. **MCP Implementation**:
-
    - Must be implemented using only Bash and `jq`.
 
 2. **Transport**:
-
    - Supports **stdio transport** exclusively (no other transport methods will be supported).
 
 3. **Configuration**:
-
    - Reads a **server configuration file** from the local file system in JSON format.
    - Reads a **tools configuration file** from the local file system in JSON format.
    - Reads a **tools script file** from the local file system in Bash.
@@ -68,7 +61,6 @@ These limitations are acceptable for the intended use case of AI assistants and 
 ## Key Deliverables
 
 1. **mcbox-core.bash**:
-
    - A Bash file containing all the server functions.
    - Can be sourced to create MCP servers in Bash.
 

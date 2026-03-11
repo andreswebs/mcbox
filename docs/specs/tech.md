@@ -1,7 +1,3 @@
----
-applyTo: "**/*"
----
-
 # Technology Brief: mcbox
 
 ## Core Technologies

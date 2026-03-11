@@ -1,1 +1,0 @@
-../../.devspecs/memory/tech.md
