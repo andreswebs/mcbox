@@ -5,9 +5,7 @@
     "version": "0.0.1"
   },
   "capabilities": {
-    "tools": {
-      "listChanged": true
-    }
+    "tools": {}
   },
   "instructions": "MC Box is a pluggable stdio MCP server written in Bash and jq. Tools are defined through sourced Bash functions."
 }

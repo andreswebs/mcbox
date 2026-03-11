@@ -87,10 +87,38 @@ setup() {
         "properties": {},
         "required": []
       }
+    },
+    {
+      "name": "read-file",
+      "description": "Tool with hyphenated name",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "fs.list",
+      "description": "Tool with dot-separated name",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
     }
   ]
 }
 EOF
+
+    # shellcheck disable=SC2329
+    function tool_read_file() {
+        echo "read-file tool executed"
+    }
+
+    # shellcheck disable=SC2329
+    function tool_fs_list() {
+        echo "fs.list tool executed"
+    }
 
     # shellcheck disable=SC2329
     function tool_test_tool() {
@@ -124,12 +152,12 @@ EOF
         return 1
     }
 
-    export -f tool_test_tool tool_simple_tool tool_complex_tool tool_complex_tool_invalid_output tool_failing_tool
+    export -f tool_test_tool tool_simple_tool tool_complex_tool tool_complex_tool_invalid_output tool_failing_tool tool_read_file tool_fs_list
 }
 
 teardown() {
     unset MCBOX_TOOLS_CONFIG_FILE
-    unset -f tool_test_tool tool_simple_tool tool_complex_tool tool_complex_tool_invalid_output tool_failing_tool 2>/dev/null || true
+    unset -f tool_test_tool tool_simple_tool tool_complex_tool tool_complex_tool_invalid_output tool_failing_tool tool_read_file tool_fs_list 2>/dev/null || true
 }
 
 @test "mcp_handle_tool_call: should handle valid tool call with required parameters" {
@@ -427,4 +455,24 @@ teardown() {
     run mcp_handle_tool_call "${id}" "${params}"
     assert_success
     assert_output --partial '[mcp_handle_tool_call] fail!'
+}
+
+@test "mcp_handle_tool_call: should accept tool name with hyphens and dispatch to underscore function" {
+    local id="26"
+    local params='{"name": "read-file", "arguments": {}}'
+
+    run mcp_handle_tool_call "${id}" "${params}"
+    assert_success
+    assert_output --partial '"result":'
+    assert_output --partial '"text":"read-file tool executed"'
+}
+
+@test "mcp_handle_tool_call: should accept tool name with dots and dispatch to underscore function" {
+    local id="27"
+    local params='{"name": "fs.list", "arguments": {}}'
+
+    run mcp_handle_tool_call "${id}" "${params}"
+    assert_success
+    assert_output --partial '"result":'
+    assert_output --partial '"text":"fs.list tool executed"'
 }

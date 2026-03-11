@@ -115,6 +115,85 @@ teardown() {
     assert_output --partial '"tools":[]'
 }
 
+@test "mcp_handle_tools_list: should return all tools and no nextCursor when MCBOX_TOOLS_PAGE_SIZE is unset" {
+    local id="0"
+
+    unset MCBOX_TOOLS_PAGE_SIZE
+
+    run mcp_handle_tools_list "${id}" '{}'
+    assert_success
+    assert_output --partial '"tools":'
+    refute_output --partial '"nextCursor"'
+}
+
+@test "mcp_handle_tools_list: should return first page and nextCursor with MCBOX_TOOLS_PAGE_SIZE=1" {
+    local id="0"
+
+    export MCBOX_TOOLS_PAGE_SIZE=1
+
+    run mcp_handle_tools_list "${id}" '{}'
+    assert_success
+    assert_output --partial '"nextCursor"'
+}
+
+@test "mcp_handle_tools_list: should return only one tool on first page with MCBOX_TOOLS_PAGE_SIZE=1" {
+    local id="0"
+
+    export MCBOX_TOOLS_PAGE_SIZE=1
+
+    run mcp_handle_tools_list "${id}" '{}'
+    assert_success
+    assert_output --partial '"name":"smoketest"'
+    refute_output --partial '"name":"smoketest_fail"'
+}
+
+@test "mcp_handle_tools_list: should return second page with different tool when cursor provided" {
+    local id="0"
+
+    export MCBOX_TOOLS_PAGE_SIZE=1
+
+    # Get cursor from first page (outside run to capture stdout only)
+    local first_page
+    first_page=$(MCBOX_TOOLS_PAGE_SIZE=1 MCBOX_TOOLS_CONFIG_FILE="${BATS_TEST_DIRNAME}/fixtures/smoketest.tools.json" mcp_handle_tools_list "${id}" '{}' 2>/dev/null)
+    local cursor
+    cursor=$(echo "${first_page}" | jq --raw-output '.result.nextCursor')
+
+    run mcp_handle_tools_list "${id}" "{\"cursor\":\"${cursor}\"}"
+    assert_success
+    assert_output --partial '"name":"smoketest_fail"'
+    refute_output --partial '"name":"smoketest"'
+}
+
+@test "mcp_handle_tools_list: should return no nextCursor on last page" {
+    local id="0"
+    local two_tool_file="${BATS_TEST_TMPDIR}/two_tools.json"
+    printf '{"tools":[{"name":"tool1","description":"Tool 1","inputSchema":{"type":"object","properties":{},"required":[]}},{"name":"tool2","description":"Tool 2","inputSchema":{"type":"object","properties":{},"required":[]}}]}' >"${two_tool_file}"
+
+    # shellcheck disable=SC2030,SC2031
+    export MCBOX_TOOLS_CONFIG_FILE="${two_tool_file}"
+    export MCBOX_TOOLS_PAGE_SIZE=1
+
+    local first_page
+    first_page=$(MCBOX_TOOLS_PAGE_SIZE=1 MCBOX_TOOLS_CONFIG_FILE="${two_tool_file}" mcp_handle_tools_list "${id}" '{}' 2>/dev/null)
+    local cursor
+    cursor=$(echo "${first_page}" | jq --raw-output '.result.nextCursor')
+
+    run mcp_handle_tools_list "${id}" "{\"cursor\":\"${cursor}\"}"
+    assert_success
+    refute_output --partial '"nextCursor"'
+}
+
+@test "mcp_handle_tools_list: should treat invalid cursor as offset 0" {
+    local id="0"
+
+    export MCBOX_TOOLS_PAGE_SIZE=1
+
+    run mcp_handle_tools_list "${id}" '{"cursor":"not-valid-base64!!!"}'
+    assert_success
+    assert_output --partial '"name":"smoketest"'
+    refute_output --partial '"name":"smoketest_fail"'
+}
+
 @test "mcp_handle_tools_list: should fail with malformed tools schema" {
     local id="0"
     local malformed_tools_file="${BATS_TEST_TMPDIR}/malformed.json"

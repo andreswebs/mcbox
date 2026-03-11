@@ -27,10 +27,18 @@ teardown_file() {
 }
 
 @test "mcp_process_request: should handle valid initialize request" {
-    local input='{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}}'
+    local input='{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-11-25"}}'
 
     run mcp_process_request "${input}"
     assert_success
+}
+
+@test "mcp_process_request: initialize response should not advertise listChanged capability" {
+    local input='{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-11-25"}}'
+
+    run mcp_process_request "${input}"
+    assert_success
+    refute_output --partial "listChanged"
 }
 
 @test "mcp_process_request: should reject non-JSON-RPC 2.0 requests" {
@@ -104,21 +112,21 @@ teardown_file() {
 }
 
 @test "mcp_process_request: should handle null id in request" {
-    local input='{"jsonrpc": "2.0", "id": null, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}}'
+    local input='{"jsonrpc": "2.0", "id": null, "method": "initialize", "params": {"protocolVersion": "2025-11-25"}}'
 
     run mcp_process_request "${input}"
     assert_success
 }
 
 @test "mcp_process_request: should handle numeric id in request" {
-    local input='{"jsonrpc": "2.0", "id": 42, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}}'
+    local input='{"jsonrpc": "2.0", "id": 42, "method": "initialize", "params": {"protocolVersion": "2025-11-25"}}'
 
     run mcp_process_request "${input}"
     assert_success
 }
 
 @test "mcp_process_request: should handle string id in request" {
-    local input='{"jsonrpc": "2.0", "id": "test-id", "method": "initialize", "params": {"protocolVersion": "2025-06-18"}}'
+    local input='{"jsonrpc": "2.0", "id": "test-id", "method": "initialize", "params": {"protocolVersion": "2025-11-25"}}'
 
     run mcp_process_request "${input}"
     assert_success
@@ -139,4 +147,18 @@ teardown_file() {
     assert_output --partial '"jsonrpc":"2.0"'
     assert_output --partial '"id":"ping-test"'
     assert_output --partial '"result":{}'
+}
+
+@test "mcp_process_request: should pass cursor param to tools/list" {
+    local cursor
+    cursor=$(printf '1' | base64)
+    local input
+    input=$(printf '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{"cursor":"%s"}}' "${cursor}")
+
+    export MCBOX_TOOLS_PAGE_SIZE=1
+
+    run mcp_process_request "${input}"
+    assert_success
+    assert_output --partial '"name":"smoketest_fail"'
+    refute_output --partial '"name":"smoketest"'
 }

@@ -1,6 +1,6 @@
 ---
 id: wor-hh53
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-03-11T00:54:16Z
@@ -24,3 +24,9 @@ Fix:
 
 Tool names containing hyphens (e.g. read-file) and dots (e.g. fs.list) are accepted and dispatched to the corresponding underscore-translated function. Names with other special characters (spaces, slashes, etc.) are still rejected with -32602. New passing tests added for hyphen and dot names. Existing rejection tests still pass. docs/specs/tech.md documents the translation rule. Full test suite passes.
 
+
+## Notes
+
+**2026-03-11T01:32:15Z**
+
+Relaxed tool name validation regex from ^[a-zA-Z0-9_]+$ to ^[a-zA-Z0-9_.-]+$ in mcbox-core.bash:1073. Added name-to-function translation using tr '.-' '__' before constructing the Bash function name (mcbox-core.bash:1112). Tool names like read-file now dispatch to tool_read_file and fs.list dispatches to tool_fs_list. Added 2 new tests in test/mcp_handle_tool_call.test.bats covering hyphen and dot name acceptance. Existing rejection tests for spaces, slashes and other special chars (e.g. test-tool\!) still pass. Documented the name-to-function mapping rule in docs/specs/tech.md. All 401 tests pass.

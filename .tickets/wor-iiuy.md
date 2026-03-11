@@ -1,6 +1,6 @@
 ---
 id: wor-iiuy
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-03-11T00:53:59Z
@@ -16,3 +16,9 @@ Four tests in test/mcp_process_request.test.bats send protocolVersion "2025-06-1
 
 All four test inputs updated from "2025-06-18" to "2025-11-25": lines 30, 107, 114, 121 of test/mcp_process_request.test.bats. Full test suite passes.
 
+
+## Notes
+
+**2026-03-11T01:25:21Z**
+
+Updated protocolVersion from '2025-06-18' to '2025-11-25' in four test inputs (lines 30, 107, 114, 121 of test/mcp_process_request.test.bats). All 398 tests pass.

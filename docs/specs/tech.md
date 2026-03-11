@@ -38,6 +38,7 @@
 ### Tool Loading Mechanism
 
 - **Convention-Based Naming**: Tools implemented as Bash functions with `tool_*` prefix (configurable)
+- **Name-to-Function Mapping**: Tool names may contain letters, digits, underscores, hyphens, and dots (`^[a-zA-Z0-9_.-]+$`). When constructing the Bash function name, hyphens and dots are translated to underscores — e.g. `read-file` dispatches to `tool_read_file` and `fs.list` dispatches to `tool_fs_list`.
 - **Dynamic Loading**: Tools sourced from `tools.bash` script at runtime
 - **JSON Schema Validation**: Input and output validation for tool parameters and results
 - **Function Export**: Tools must be exported for discoverability

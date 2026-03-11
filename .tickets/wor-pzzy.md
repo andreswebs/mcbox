@@ -1,6 +1,6 @@
 ---
 id: wor-pzzy
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-03-11T00:54:05Z
@@ -16,3 +16,9 @@ defaults/server.json advertises capabilities.tools.listChanged: true, which per 
 
 defaults/server.json no longer contains listChanged: true. test/fixtures/smoketest.server.json updated the same way if it contained the key. Any test asserting listChanged: true in the initialize response updated to expect the key absent. Full test suite passes.
 
+
+## Notes
+
+**2026-03-11T01:27:40Z**
+
+Removed listChanged: true from defaults/server.json and test/fixtures/smoketest.server.json. Added a regression test in mcp_process_request.test.bats asserting the initialize response does not contain 'listChanged'. All 399 tests pass.

@@ -966,6 +966,7 @@ function mcp_handle_notification() {
 
 function mcp_handle_tools_list() {
     local id="${1}"
+    local params="${2:-{\}}"
 
     local tools_config
     tools_config="${MCBOX_TOOLS_CONFIG}"
@@ -991,7 +992,39 @@ function mcp_handle_tools_list() {
         return 1
     fi
 
-    jsonrpc_create_result_response "${id}" "${tools_config}"
+    local page_size="${MCBOX_TOOLS_PAGE_SIZE:-0}"
+
+    if [ "${page_size}" -le 0 ] 2>/dev/null; then
+        jsonrpc_create_result_response "${id}" "${tools_config}"
+        return 0
+    fi
+
+    local cursor_encoded
+    cursor_encoded=$(echo "${params}" | jq --raw-output '.cursor // empty' 2>/dev/null || true)
+
+    local offset=0
+    if [ -n "${cursor_encoded}" ]; then
+        local decoded
+        decoded=$(echo "${cursor_encoded}" | base64 --decode 2>/dev/null || true)
+        if [[ "${decoded}" =~ ^[0-9]+$ ]]; then
+            offset="${decoded}"
+        fi
+    fi
+
+    local result
+    result=$(echo "${tools_config}" | jq --argjson offset "${offset}" --argjson size "${page_size}" \
+        '{tools: (.tools[$offset:$offset+$size])}')
+
+    local total
+    total=$(echo "${tools_config}" | jq '.tools | length')
+
+    if [ $((offset + page_size)) -lt "${total}" ]; then
+        local next_cursor
+        next_cursor=$(printf '%d' $((offset + page_size)) | base64)
+        result=$(echo "${result}" | jq --arg cursor "${next_cursor}" '. + {nextCursor: $cursor}')
+    fi
+
+    jsonrpc_create_result_response "${id}" "${result}"
 }
 
 function mcp_handle_ping() {
@@ -1070,7 +1103,7 @@ function mcp_handle_tool_call() {
     tool_name=$(echo "${params}" | jq --raw-output '.name')
     log_debug "tool: ${tool_name}"
 
-    if ! [[ "${tool_name}" =~ ^[a-zA-Z0-9_]+$ ]]; then
+    if ! [[ "${tool_name}" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
         local error_message="tool name is malformed"
         log_error "${error_message}: ${tool_name}"
         jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
@@ -1109,7 +1142,9 @@ function mcp_handle_tool_call() {
     local tool_name_prefix tool content mcp_result
 
     tool_name_prefix="${MCBOX_TOOLS_FUNCTION_NAME_PREFIX:-tool_}"
-    tool="${tool_name_prefix}${tool_name}"
+    local tool_function_suffix
+    tool_function_suffix=$(printf '%s' "${tool_name}" | tr '.-' '__')
+    tool="${tool_name_prefix}${tool_function_suffix}"
 
     if is_cmd_available "${tool}"; then
         log_trace "tool found"
@@ -1233,7 +1268,7 @@ function mcp_process_request() {
         return 0
         ;;
     "tools/list")
-        mcp_handle_tools_list "${id}"
+        mcp_handle_tools_list "${id}" "${params}"
         return 0
         ;;
     "tools/call")

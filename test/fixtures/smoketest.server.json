@@ -5,9 +5,7 @@
     "version": "0.0.1"
   },
   "capabilities": {
-    "tools": {
-      "listChanged": true
-    }
+    "tools": {}
   },
   "instructions": "This server is a test fixture. It serves to check if MCP initialization is working properly."
 }
