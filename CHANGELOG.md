@@ -6,36 +6,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.2.0 - 2026-03-11
 
-[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[8dbf045](8dbf045eaeb20157d6564906d9e0f6aca8689190)
+[9a955ca](9a955ca86e97c93a2234c171681c26572e13cd26)...[16f51df](16f51df686fdeacdedc11e653ddb72e1e41247f6)
+
+### Documentation
+
+- Support mcp prompts ([16f51df](16f51df686fdeacdedc11e653ddb72e1e41247f6)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
+## 0.1.8 - 2026-03-11
+
+[0670de1](0670de1c7586df0a3c3e2be5375afc3d1bc7136c)...[9a955ca](9a955ca86e97c93a2234c171681c26572e13cd26)
+
+### Miscellaneous Tasks
+
+- Bump mcp protocolVersion 2025-06-18 -> 2025-11-25 (#46) ([d745ccd](d745ccd90db20b06afa0be0451e69b413f2401cd)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
+### Refactor
+
+- Improve logging and outputs ([7ae1088](7ae1088d93ef814a51db24bcaf905c389bdba57b)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Refactor agent backpressure ([662d5cd](662d5cd21bbd912632fb87a9bfdff24f9ef80736))
+
+## 0.1.7 - 2025-10-14
+
+[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[0670de1](0670de1c7586df0a3c3e2be5375afc3d1bc7136c)
+
+### Bug Fixes
+
+- Use stderr for --version ([28706c2](28706c246c4bf7d906027d4fe0e6ef468c093710)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+
+### Documentation
+
+- Changelog ([382feb6](382feb6470f61ffad3d22fff1b6a836c423c5515)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Changelog ([9c7f136](9c7f136dbf1e3de28abb846c6de39f73b2ab7132)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Changelog ([74934cc](74934ccfa0ee457b32a590a86509a21f8308b875)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Changelog ([142ab0e](142ab0e9b896e73c3b056a9d309a0dd8a4af3774)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Mention realpath error ([0670de1](0670de1c7586df0a3c3e2be5375afc3d1bc7136c)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ### Refactor
 
 - Add more debug logging (#15) ([b9ca003](b9ca003b0738da76330a11577f81dbe8c0a8e2d3)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Logging ([cb5d90b](cb5d90b0f661935dfc107ab64802b832d5a58ae4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 - Logging ([8dbf045](8dbf045eaeb20157d6564906d9e0f6aca8689190)), Signed-off-by:Andre Silva <andreswebs@pm.me>
-  [ac92992](ac9299269781be505dad55489461b6a3c42494b4)...[30e362b](30e362bfdccab179a5eba88f547399e714eee435)
-
-### Refactor
-
-- Logging ([30e362b](30e362bfdccab179a5eba88f547399e714eee435)), Signed-off-by:Andre Silva <andreswebs@pm.me>
-
-## 0.1.6 - 2025-10-14
-
-[1ba2685](1ba26851dc1654987b70955ad57065020d8efcb4)...[ac92992](ac9299269781be505dad55489461b6a3c42494b4)
-
-### Bug Fixes
-
-- Use stderr for --version ([ac92992](ac9299269781be505dad55489461b6a3c42494b4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
-
-## 0.1.5 - 2025-10-13
-
-[7edb1fe](7edb1feeb6ddcdda9c5ed02b8474d94691cfba70)...[1ba2685](1ba26851dc1654987b70955ad57065020d8efcb4)
-
-### Refactor
-
-- Add more debug logging (#15) ([1ba2685](1ba26851dc1654987b70955ad57065020d8efcb4)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Logging ([eb897b0](eb897b01b8afe77039529d09fbc0c47f19635202)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Logging ([c55df39](c55df39997623cd143af7fa175e123a4cdc31664)), Signed-off-by:Andre Silva <andreswebs@pm.me>
+- Fix format ([599b266](599b266aa81e06b1a26b1485f5c8bfd9b90b3c6d)), Signed-off-by:Andre Silva <andreswebs@pm.me>
 
 ## 0.1.4 - 2025-10-10
 
