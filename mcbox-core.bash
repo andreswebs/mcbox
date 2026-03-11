@@ -3,7 +3,7 @@
 
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || return 0
 
-TOOL_SCHEMA='
+readonly TOOL_SCHEMA='
 {
     "type": "object",
     "required": ["inputSchema", "name"],
@@ -63,7 +63,7 @@ TOOL_SCHEMA='
 }
 '
 
-TOOLS_SCHEMA='
+readonly TOOLS_SCHEMA='
 {
     "type": "object",
     "required": ["tools"],
@@ -71,6 +71,55 @@ TOOLS_SCHEMA='
         "tools": {
             "type": "array",
             "items": '${TOOL_SCHEMA}'
+        }
+    }
+}
+'
+
+readonly PROMPT_SCHEMA='
+{
+    "type": "object",
+    "required": ["name"],
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "arguments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "required": {
+                        "type": "boolean"
+                    }
+                }
+            }
+        }
+    }
+}
+'
+
+readonly PROMPTS_SCHEMA='
+{
+    "type": "object",
+    "required": ["prompts"],
+    "properties": {
+        "prompts": {
+            "type": "array",
+            "items": '${PROMPT_SCHEMA}'
         }
     }
 }
@@ -769,6 +818,30 @@ function mcbox_get_tools_lib_location() {
     echo "${tools_lib_file}"
 }
 
+function mcbox_get_prompts_config_location() {
+    local config_home
+    config_home=$(mcbox_get_config_home)
+    local prompts_config_file="${MCBOX_PROMPTS_CONFIG_FILE:-${config_home}/prompts.json}"
+    if ! prompts_config_file=$(realpath --canonicalize-missing --quiet "${prompts_config_file}"); then
+        log_error "failed to parse path: ${prompts_config_file}"
+        return 1
+    fi
+    log_trace "${prompts_config_file}"
+    echo "${prompts_config_file}"
+}
+
+function mcbox_get_prompts_lib_location() {
+    local config_home
+    config_home=$(mcbox_get_config_home)
+    local prompts_lib_file="${MCBOX_PROMPTS_LIB_FILE:-${config_home}/prompts.bash}"
+    if ! prompts_lib_file=$(realpath --canonicalize-missing --quiet "${prompts_lib_file}"); then
+        log_error "failed to parse path: ${prompts_lib_file}"
+        return 1
+    fi
+    log_trace "${prompts_lib_file}"
+    echo "${prompts_lib_file}"
+}
+
 function mcbox_get_version_location() {
     local data_home
     data_home=$(mcbox_get_data_home)
@@ -841,6 +914,36 @@ function mcbox_load_config() {
         log_fatal "failed to source tools library: ${tools_lib_file}"
         return 1
     fi
+
+    local prompts_config_file
+    prompts_config_file=$(mcbox_get_prompts_config_location)
+
+    local prompts_config='{"prompts":[]}'
+    if is_readable_file "${prompts_config_file}"; then
+        local loaded_prompts_config
+        if loaded_prompts_config=$(json_read_file "${prompts_config_file}") &&
+            jsonschema_validate_schema "${loaded_prompts_config}" "${PROMPTS_SCHEMA}"; then
+            prompts_config="${loaded_prompts_config}"
+        else
+            log_error "failed to load or validate ${prompts_config_file}, using empty prompts"
+        fi
+    else
+        log_error "prompts config file not accessible: ${prompts_config_file}"
+    fi
+
+    export MCBOX_PROMPTS_CONFIG="${prompts_config}"
+
+    local prompts_lib_file
+    prompts_lib_file=$(mcbox_get_prompts_lib_location)
+
+    if is_readable_file "${prompts_lib_file}"; then
+        # shellcheck disable=SC1090
+        if ! source "${prompts_lib_file}"; then
+            log_error "failed to source prompts library: ${prompts_lib_file}"
+        fi
+    else
+        log_error "prompts library file not accessible: ${prompts_lib_file}"
+    fi
 }
 
 function mcbox_get_server_tag() {
@@ -870,7 +973,7 @@ function mcbox_config_init() {
     local config_home
     config_home=$(mcbox_get_config_home)
 
-    local config_files=("server.json" "tools.json" "tools.bash")
+    local config_files=("server.json" "tools.json" "tools.bash" "prompts.json" "prompts.bash")
 
     if ! [ -d "${defaults_dir}" ]; then
         echo_stderr "config defaults directory does not exist: ${defaults_dir}"
@@ -946,6 +1049,15 @@ function mcp_handle_initialize() {
         return 1
     fi
 
+    local prompts_config
+    prompts_config="${MCBOX_PROMPTS_CONFIG:-}"
+
+    if [ -n "${prompts_config}" ] &&
+        echo "${prompts_config}" | jq --exit-status '.prompts | length > 0' >/dev/null 2>&1; then
+        server_config=$(echo "${server_config}" | jq --compact-output --monochrome-output \
+            '.capabilities.prompts = {"listChanged": false}')
+    fi
+
     jsonrpc_create_result_response "${id}" "${server_config}"
 }
 
@@ -966,7 +1078,7 @@ function mcp_handle_notification() {
 
 function mcp_handle_tools_list() {
     local id="${1}"
-    local params="${2:-{\}}"
+    local params="${2:-\{\}}"
 
     local tools_config
     tools_config="${MCBOX_TOOLS_CONFIG}"
@@ -1022,6 +1134,187 @@ function mcp_handle_tools_list() {
         local next_cursor
         next_cursor=$(printf '%d' $((offset + page_size)) | base64)
         result=$(echo "${result}" | jq --arg cursor "${next_cursor}" '. + {nextCursor: $cursor}')
+    fi
+
+    jsonrpc_create_result_response "${id}" "${result}"
+}
+
+function mcp_handle_prompts_list() {
+    local id="${1}"
+    local params="${2:-\{\}}"
+
+    local prompts_config
+    prompts_config="${MCBOX_PROMPTS_CONFIG}"
+    log_trace "${prompts_config}"
+
+    if [ -z "${prompts_config}" ] || ! is_valid_json "${prompts_config}"; then
+        log_error "prompts config is not valid; using default"
+        local prompts_config_file
+        prompts_config_file=$(mcbox_get_prompts_config_location)
+
+        if ! prompts_config=$(json_read_file "${prompts_config_file}"); then
+            log_fatal "failed to read prompts configuration file: ${prompts_config_file}"
+            jsonrpc_create_error_response "${id}" -32603 "Internal error"
+            return 1
+        fi
+
+        log_trace "${prompts_config}"
+    fi
+
+    if ! jsonschema_validate_schema "${prompts_config}" "${PROMPTS_SCHEMA}"; then
+        log_fatal "prompts config failed schema validation"
+        jsonrpc_create_error_response "${id}" -32603 "Internal error"
+        return 1
+    fi
+
+    local page_size="${MCBOX_PROMPTS_PAGE_SIZE:-0}"
+
+    if [ "${page_size}" -le 0 ] 2>/dev/null; then
+        jsonrpc_create_result_response "${id}" "${prompts_config}"
+        return 0
+    fi
+
+    local cursor_encoded
+    cursor_encoded=$(echo "${params}" | jq --raw-output '.cursor // empty' 2>/dev/null || true)
+
+    local offset=0
+    if [ -n "${cursor_encoded}" ]; then
+        local decoded
+        decoded=$(echo "${cursor_encoded}" | base64 --decode 2>/dev/null || true)
+        if [[ "${decoded}" =~ ^[0-9]+$ ]]; then
+            offset="${decoded}"
+        fi
+    fi
+
+    local result
+    result=$(echo "${prompts_config}" | jq --argjson offset "${offset}" --argjson size "${page_size}" \
+        '{prompts: (.prompts[$offset:$offset+$size])}')
+
+    local total
+    total=$(echo "${prompts_config}" | jq '.prompts | length')
+
+    if [ $((offset + page_size)) -lt "${total}" ]; then
+        local next_cursor
+        next_cursor=$(printf '%d' $((offset + page_size)) | base64)
+        result=$(echo "${result}" | jq --arg cursor "${next_cursor}" '. + {nextCursor: $cursor}')
+    fi
+
+    jsonrpc_create_result_response "${id}" "${result}"
+}
+
+function mcp_handle_prompts_get() {
+    local id="${1}"
+    local params="${2:-\{\}}"
+
+    local prompts_config
+    prompts_config="${MCBOX_PROMPTS_CONFIG}"
+
+    if [ -z "${prompts_config}" ] || ! is_valid_json "${prompts_config}"; then
+        log_error "prompts config is not valid; using default"
+        local prompts_config_file
+        prompts_config_file=$(mcbox_get_prompts_config_location)
+
+        if ! prompts_config=$(json_read_file "${prompts_config_file}"); then
+            log_fatal "failed to read prompts configuration file: ${prompts_config_file}"
+            jsonrpc_create_error_response "${id}" -32603 "Internal error"
+            return 1
+        fi
+    fi
+
+    if ! jsonschema_validate_schema "${prompts_config}" "${PROMPTS_SCHEMA}"; then
+        log_fatal "prompts config failed schema validation"
+        jsonrpc_create_error_response "${id}" -32603 "Internal error"
+        return 1
+    fi
+
+    if ! json_object_has_key "${params}" "name"; then
+        local error_message="prompt call parameters missing required 'name' property"
+        log_error "${error_message}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
+        return 0
+    fi
+
+    local prompt_name
+    prompt_name=$(echo "${params}" | jq --raw-output '.name')
+    log_debug "prompt: ${prompt_name}"
+
+    if ! [[ "${prompt_name}" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
+        local error_message="prompt name is malformed"
+        log_error "${error_message}: ${prompt_name}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
+        return 0
+    fi
+
+    if ! echo "${prompts_config}" | jq --exit-status --arg name "${prompt_name}" '.prompts | any(.name == $name)' >/dev/null 2>&1; then
+        local error_message="prompt not found"
+        log_error "${error_message}: ${prompt_name}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
+        return 0
+    fi
+
+    local prompt_def
+    prompt_def=$(echo "${prompts_config}" | jq --arg name "${prompt_name}" '.prompts[] | select(.name == $name)')
+
+    local arguments
+    arguments=$(echo "${params}" | jq '.arguments // {}')
+    log_debug "prompt arguments: ${arguments}"
+
+    if ! is_json_object "${arguments}"; then
+        local error_message="arguments must be a JSON object"
+        log_error "${error_message}"
+        jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
+        return 0
+    fi
+
+    local required_args
+    required_args=$(echo "${prompt_def}" | jq --raw-output '[.arguments // [] | .[] | select(.required == true) | .name] | .[]')
+
+    while IFS= read -r arg_name; do
+        [ -z "${arg_name}" ] && continue
+        if ! echo "${arguments}" | jq --exit-status --arg n "${arg_name}" 'has($n)' >/dev/null 2>&1; then
+            local error_message="missing required argument: ${arg_name}"
+            log_error "${error_message}"
+            jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
+            return 0
+        fi
+    done <<<"${required_args}"
+
+    local provided_args
+    provided_args=$(echo "${arguments}" | jq --raw-output 'keys[]')
+
+    while IFS= read -r arg_name; do
+        [ -z "${arg_name}" ] && continue
+        if ! echo "${prompt_def}" | jq --exit-status --arg n "${arg_name}" '.arguments // [] | any(.name == $n)' >/dev/null 2>&1; then
+            local error_message="unknown argument: ${arg_name}"
+            log_error "${error_message}"
+            jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
+            return 0
+        fi
+        if ! echo "${arguments}" | jq --exit-status --arg n "${arg_name}" '.[$n] | type == "string"' >/dev/null 2>&1; then
+            local error_message="argument must be a string: ${arg_name}"
+            log_error "${error_message}"
+            jsonrpc_create_error_response "${id}" -32602 "Invalid params: ${error_message}"
+            return 0
+        fi
+    done <<<"${provided_args}"
+
+    local prompt_name_prefix
+    prompt_name_prefix="${MCBOX_PROMPTS_FUNCTION_NAME_PREFIX:-prompt_}"
+    local prompt_function_suffix
+    prompt_function_suffix=$(printf '%s' "${prompt_name}" | tr '.-' '__')
+    local prompt_function="${prompt_name_prefix}${prompt_function_suffix}"
+
+    local result
+    if ! is_cmd_available "${prompt_function}"; then
+        log_fatal "prompt function not available: ${prompt_function}"
+        jsonrpc_create_error_response "${id}" -32603 "Internal error"
+        return 1
+    fi
+
+    if ! result=$(${prompt_function} "${arguments}" 2>&1); then
+        log_fatal "prompt function execution failed: ${result}"
+        jsonrpc_create_error_response "${id}" -32603 "Internal error"
+        return 1
     fi
 
     jsonrpc_create_result_response "${id}" "${result}"
@@ -1273,6 +1566,14 @@ function mcp_process_request() {
         ;;
     "tools/call")
         mcp_handle_tool_call "${id}" "${params}"
+        return 0
+        ;;
+    "prompts/list")
+        mcp_handle_prompts_list "${id}" "${params}"
+        return 0
+        ;;
+    "prompts/get")
+        mcp_handle_prompts_get "${id}" "${params}"
         return 0
         ;;
     "ping")

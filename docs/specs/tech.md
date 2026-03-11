@@ -33,6 +33,10 @@
   - `MCBOX_TOOLS_CONFIG_FILE`: Tools configuration location
   - `MCBOX_TOOLS_LIB_FILE`: Tools implementation script location
   - `MCBOX_TOOLS_FUNCTION_NAME_PREFIX`: Tool function naming prefix (default: `tool_`)
+  - `MCBOX_PROMPTS_CONFIG_FILE`: Prompts configuration location
+  - `MCBOX_PROMPTS_LIB_FILE`: Prompts implementation script location
+  - `MCBOX_PROMPTS_FUNCTION_NAME_PREFIX`: Prompt function naming prefix (default: `prompt_`)
+  - `MCBOX_PROMPTS_PAGE_SIZE`: Number of prompts per page (default: `0`, meaning no pagination)
   - `MCBOX_CORE_LIB_FILE`: Core library location
 
 ### Tool Loading Mechanism
@@ -42,6 +46,16 @@
 - **Dynamic Loading**: Tools sourced from `tools.bash` script at runtime
 - **JSON Schema Validation**: Input and output validation for tool parameters and results
 - **Function Export**: Tools must be exported for discoverability
+
+### Prompt Loading Mechanism
+
+- **Convention-Based Naming**: Prompts implemented as Bash functions with `prompt_*` prefix (configurable via `MCBOX_PROMPTS_FUNCTION_NAME_PREFIX`)
+- **Name-to-Function Mapping**: Same rule as tools — hyphens and dots in prompt names are translated to underscores when constructing the Bash function name. e.g. `code-review` dispatches to `prompt_code_review`.
+- **Dynamic Loading**: Prompts sourced from `prompts.bash` script at runtime
+- **Argument Validation**: Name-based (not JSON Schema). Each argument has a `name`, optional `description`, and optional `required` flag. Required arguments must be present in the request; unknown arguments are rejected.
+- **Non-Fatal Config Loading**: If `prompts.json` is missing, unreadable, or fails schema validation, the server logs the error and continues with zero prompts (the server does not abort).
+- **Conditional Capability Advertisement**: The `prompts` capability is only included in the `initialize` response when at least one prompt is configured. Clients that do not see the capability will not send `prompts/list` or `prompts/get` requests.
+- **Pagination**: Same cursor-based pattern as `tools/list`. Set `MCBOX_PROMPTS_PAGE_SIZE` to a positive integer to enable; `0` (default) returns all prompts in a single page.
 
 ## Development Tools
 
@@ -105,13 +119,13 @@
 ### Current Capabilities
 
 - **Tools**: Complete tool definition, listing, and execution support
+- **Prompts**: Complete prompt definition, listing, and execution support
 - **Server Initialization**: MCP handshake and capability negotiation
 - **Error Handling**: JSON-RPC error responses with detailed error information
 - **Schema Validation**: Input/output schema validation for tool parameters
 
 ### Planned Features
 
-- **Prompts**: Planned support for MCP prompt capabilities
 - **Resources**: Planned support for MCP resource management
 - **Sampling**: Planned support for MCP sampling capabilities
 
@@ -128,6 +142,8 @@
 - **server.json**: Server metadata and capabilities configuration
 - **tools.json**: Tool definitions and schemas
 - **tools.bash**: Tool implementations as Bash functions
+- **prompts.json**: Prompt definitions (array of prompt objects, each with `name`, optional `title`, `description`, and `arguments`)
+- **prompts.bash**: Prompt handler implementations as Bash functions
 
 ## Integration Patterns
 
@@ -155,6 +171,38 @@ function tool_example() {
 export -f tool_example
 ```
 
+### Prompt Implementation
+
+```bash
+# Prompt function following naming convention
+function prompt_code_review() {
+    local arguments="${1}"
+    local language
+    language=$(echo "${arguments}" | jq --raw-output '.language // "any"')
+    # Return MCP prompt result: {"description":"...","messages":[...]}
+    echo "${result_json}"
+}
+
+# Export for discoverability
+export -f prompt_code_review
+```
+
+### Prompts Configuration
+
+```json
+{
+  "prompts": [
+    {
+      "name": "code-review",
+      "description": "Review code for quality and correctness",
+      "arguments": [
+        { "name": "language", "description": "Programming language", "required": false }
+      ]
+    }
+  ]
+}
+```
+
 ### Environment Configuration
 
 ```bash
@@ -163,6 +211,10 @@ export MCBOX_SERVER_CONFIG_FILE="/custom/path/server.json"
 export MCBOX_TOOLS_CONFIG_FILE="/custom/path/tools.json"
 export MCBOX_TOOLS_LIB_FILE="/custom/path/tools.bash"
 export MCBOX_TOOLS_FUNCTION_NAME_PREFIX="custom_tool_"
+export MCBOX_PROMPTS_CONFIG_FILE="/custom/path/prompts.json"
+export MCBOX_PROMPTS_LIB_FILE="/custom/path/prompts.bash"
+export MCBOX_PROMPTS_FUNCTION_NAME_PREFIX="custom_prompt_"
+export MCBOX_PROMPTS_PAGE_SIZE="10"
 ```
 
 ## Technical Constraints
@@ -173,7 +225,7 @@ export MCBOX_TOOLS_FUNCTION_NAME_PREFIX="custom_tool_"
 - **Concurrency**: No parallel tool execution
 - **Memory**: Limited memory management capabilities
 - **Streaming**: No streaming response support
-- **Protocol**: Tools capability only (currently)
+- **Protocol**: Tools and prompts capabilities (resources and sampling not yet implemented)
 
 ### Acceptable Trade-offs
 

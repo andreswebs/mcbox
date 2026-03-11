@@ -162,3 +162,20 @@ teardown_file() {
     assert_output --partial '"name":"smoketest_fail"'
     refute_output --partial '"name":"smoketest"'
 }
+
+@test "mcp_process_request: should handle prompts/list request" {
+    local input='{"jsonrpc": "2.0", "id": 10, "method": "prompts/list", "params": {}}'
+
+    run mcp_process_request "${input}"
+    assert_success
+    assert_output --partial '"result":'
+    refute_output --partial '"code":-32601'
+}
+
+@test "mcp_process_request: should handle prompts/get request" {
+    local input='{"jsonrpc": "2.0", "id": 11, "method": "prompts/get", "params": {"name": "greet"}}'
+
+    run mcp_process_request "${input}"
+    assert_success
+    refute_output --partial '"code":-32601'
+}
